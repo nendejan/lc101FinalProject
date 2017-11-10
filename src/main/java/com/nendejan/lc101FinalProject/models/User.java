@@ -1,6 +1,8 @@
 package com.nendejan.lc101FinalProject.models;
 
 
+import org.hibernate.validator.constraints.Email;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -18,19 +20,30 @@ public class User {
     private int id;
 
     @NotNull
-    @Size(min=3, max=15)
+    @Size(min=3, max=15, message = "Username must be between 3 and 15 characters long.")
     private String username;
+
+    @NotNull
+    @Size(min=8, message = "Password must be at least 8 characters long.")
     private String password;
+
+    @NotNull
+
     private String passwordConfirm;
-    private boolean isAdmin;
+
+    @NotNull
+
+    private String email;
+
 
     public User() {}
 
-    public User(String username, String password, String passwordConfirm, boolean isAdmin){
+    public User(String username, String password, String passwordConfirm, String email){
         this.username = username;
         this.password = password;
         this.passwordConfirm = passwordConfirm;
-        this.isAdmin = isAdmin;
+        this.email = email;
+
 
     }
 
@@ -62,11 +75,11 @@ public class User {
         this.passwordConfirm = passwordConfirm;
     }
 
-    public boolean getIsAdmin() {
-        return isAdmin;
+    public String getEmail() {
+        return email;
     }
 
-    public void setIsAdmin(boolean isAdmin) {
-        this.isAdmin = isAdmin;
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

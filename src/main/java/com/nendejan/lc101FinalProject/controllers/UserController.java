@@ -176,7 +176,7 @@ public class UserController {
 
 
 
-
+/*TODO create log out button*/
 
 
     @RequestMapping(value="/dashboard", method=RequestMethod.GET)
