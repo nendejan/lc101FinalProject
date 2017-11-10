@@ -7,12 +7,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
+
+
+
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+
 
 @Controller
 @RequestMapping("login")
@@ -39,25 +44,156 @@ public class UserController {
 
     }
 
-    @RequestMapping(value= "registration", method = RequestMethod.POST)
-    public String processRegistrationForm(@ModelAttribute @Valid User newUser, Errors errors, @RequestParam String username, @RequestParam String password, @RequestParam String passwordConfirm, @RequestParam boolean isAdmin, Model model){
+    @RequestMapping(value= "/registration", method = RequestMethod.POST)
+    public String processRegistrationForm(HttpServletResponse response, @ModelAttribute @Valid User newUser, Errors errors, @RequestParam String username, @RequestParam String password, @RequestParam String passwordConfirm, @RequestParam String email, Model model){
 
         if (errors.hasErrors()){
             model.addAttribute("title", "Sign Up!");
             return "login/registration";
         }
-        else if(password != passwordConfirm){
-            model.addAttribute("title", "Sign Up!");
+        /*
+        TODO: VALIDATION setup REGEX for username and email fields
+        TODO: VALIDATION passwords are plain text? need to add hashing*/
+
+        boolean passwordsMatch = false;
+        boolean usernameTaken = false;
+        boolean emailTaken = false;
+        for (User user : userDao.findAll()){
+            if (user.getUsername().equals(username)){
+                usernameTaken = true;
+            }}
+        for (User user : userDao.findAll()){
+            if (user.getEmail().equals(email)){
+                emailTaken = true;
+            }
+        }
+
+
+
+       /*TODO: CSS/UX when you setup css make this font red "error"*/
+
+       if (usernameTaken == true) {
+           model.addAttribute("usernameTakenError", "That user name is currently in use, please choose another.");
+           return "login/registration";
+       }
+
+       /*TODO VALIDTION: recheck indentation here*/
+        if (emailTaken == true) {
+            model.addAttribute("emailTakenError", "That email already belongs to an account.");
             return "login/registration";
         }
+
+       if (password.equals(passwordConfirm)){
+            passwordsMatch =true;}
+
+       else if (passwordsMatch == false){
+            model.addAttribute("title", "Sign Up!");
+            model.addAttribute("passwordConfirmError", "Passwords must match.");
+            return "login/registration";
+        }
+
+
+
+
         else
         newUser.setUsername(username);
         newUser.setPassword(password);
         newUser.setPasswordConfirm(passwordConfirm);
-        newUser.setIsAdmin(isAdmin);
+        newUser.setEmail(email);
+
         userDao.save(newUser);
 
-        return "/welcome";
+
+
+        Cookie usernameGreeter  = new Cookie("nameToGreet", newUser.getUsername());
+        usernameGreeter.setMaxAge(24 * 60 * 60);
+        response.addCookie(usernameGreeter);
+
+        return "redirect:welcome";
+
+
+    }
+    @RequestMapping(value= "/welcome", method = RequestMethod.GET)
+    public String displayWelcomePage (HttpServletRequest request,
+                                      @CookieValue(value="nameToGreet", defaultValue ="User") String cookieValue, Model model) {
+        request.getCookies();
+
+        /*TODO:  VALIDATION set up registration link email*/
+
+        model.addAttribute("title", "Welcome, " + cookieValue + " an email will be sent out shortly with a registration link enclosed.");
+
+
+        return "login/welcome";
     }
 
+    @RequestMapping(value="/sign-in", method = RequestMethod.GET)
+    public String displaySignInPage(Model model){
+        model.addAttribute("title", "Sign In!");
+        model.addAttribute("signInFail", null);
+        model.addAttribute(new User());
+
+
+        return "login/sign-in";
+    }
+
+
+
+   @RequestMapping(value="/sign-in", method= RequestMethod.POST)
+    public String processSignInPage(HttpServletResponse response,@RequestParam String username, @RequestParam String password, Model model){
+/*TODO Check this logic after setting up dashboard view and handlers*/
+
+        boolean correctLogin = false;
+
+
+/*TODO VALIDATION : Setup error message for incorrect credentials*/
+        User thisUser = userDao.findByUsername(username);
+        if(thisUser.getPassword().equals(password)){
+            correctLogin = true;
+        }
+
+
+        if (correctLogin == true){
+
+
+            String cookieValueString = Integer.toString(thisUser.getId());
+            Cookie loggedInCookie = new Cookie("loggedInCookie", cookieValueString);
+            loggedInCookie.setMaxAge(24 * 60 * 60);
+            /* TODO how long should a user remain logged in?*/
+
+            response.addCookie(loggedInCookie);
+
+            return "redirect:dashboard";
+
+        }
+
+        else {
+            model.addAttribute("title", "Sign In!");
+            model.addAttribute("signInFail", "Incorrect Username and Password Combination.");
+
+            return "login/sign-in";
+            }
+    }
+
+
+
+
+
+
+    @RequestMapping(value="/dashboard", method=RequestMethod.GET)
+    public String displayDashBoardPage(HttpServletRequest request, Model model, @CookieValue(value="loggedInCookie", defaultValue ="loggedInUserIdString") String cookieValue){
+
+        int loggedInUserId = Integer.parseInt(cookieValue);
+
+        User loggedInUser = userDao.findOne(loggedInUserId);
+        model.addAttribute("title", "Welcome, " + loggedInUser.getUsername() + "!" );
+
+        return "login/dashboard";
+
+    }
 }
+
+
+
+
+
+
