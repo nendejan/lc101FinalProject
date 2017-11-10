@@ -3,7 +3,9 @@ package com.nendejan.lc101FinalProject.controllers;
 
 import com.nendejan.lc101FinalProject.models.User;
 import com.nendejan.lc101FinalProject.models.data.UserDao;
+import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -17,6 +19,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+
+
 
 
 @Controller
@@ -54,6 +58,11 @@ public class UserController {
         /*
         TODO: VALIDATION setup REGEX for username and email fields
         TODO: VALIDATION passwords are plain text? need to add hashing*/
+
+
+        String passwordHash = BCrypt.hashpw(password, BCrypt.gensalt());
+        String passwordConfirmHash = BCrypt.hashpw(passwordConfirm, BCrypt.gensalt());
+
 
         boolean passwordsMatch = false;
         boolean usernameTaken = false;
@@ -97,8 +106,8 @@ public class UserController {
 
         else
         newUser.setUsername(username);
-        newUser.setPassword(password);
-        newUser.setPasswordConfirm(passwordConfirm);
+        newUser.setPassword(passwordHash);
+        newUser.setPasswordConfirm(passwordConfirmHash);
         newUser.setEmail(email);
 
         userDao.save(newUser);
@@ -144,10 +153,10 @@ public class UserController {
 
         boolean correctLogin = false;
 
-
 /*TODO VALIDATION : Setup error message for incorrect credentials*/
         User thisUser = userDao.findByUsername(username);
-        if(thisUser.getPassword().equals(password)){
+       /* if(thisUser.getPassword().equals(passwordHash))*/
+       if (BCrypt.checkpw(password, thisUser.getPassword())){
             correctLogin = true;
         }
 
