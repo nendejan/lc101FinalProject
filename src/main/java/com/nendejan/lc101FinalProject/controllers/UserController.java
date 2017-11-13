@@ -163,7 +163,7 @@ public class UserController {
 
         if (correctLogin == true){
 
-
+            /*TODO VALIDATION : Hash this cookie?*/
             String cookieValueString = Integer.toString(thisUser.getId());
             Cookie loggedInCookie = new Cookie("loggedInCookie", cookieValueString);
             loggedInCookie.setMaxAge(24 * 60 * 60);

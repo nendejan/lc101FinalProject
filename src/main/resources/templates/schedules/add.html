@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+<head th:replace="fragments :: head">
+</head>
+
+<body class="container">
+
+<h1 th:text="${title}">Default Title</h1>
+<nav th:replace="fragments :: navigationSchedules"></nav>
+
+<form method="post" style="max-width:600px;" th:object="${schedule}">
+
+
+    <!-- TODO: This input style is terrible, its a placeholder until I can learn more about static serving with Springboot and start putting some JS in the app-->
+
+    <div class="form-group">
+        <label th:for="scheduleDates">Choose Schedule Dates</label>
+        <input class="form-control" th:field="*{scheduleDates}"/>
+        <span th:errors="*{scheduleDates}" class="error"></span>
+
+    </div>
+
+
+    <input type="submit" class="btn btn-success" value="Create Schedule"  />
+</form>
+
+<footer th:replace="fragments :: navigationFooter"></footer>
+</body>
+</html>

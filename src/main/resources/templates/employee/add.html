@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+<head th:replace="fragments :: head"></head>
+
+<body class="container">
+
+<h1 th:text="${title}">Default Title</h1>
+<nav th:replace="fragments :: navigationEmployee"></nav>
+
+<form method="post" style="max-width:600px;" th:object="${employee}">
+    <div class="form-group">
+        <label th:for="name">Name</label>
+        <input class="form-control" th:field="*{name}" />
+        <span th:errors="*{name}" class="error"></span>
+    </div>
+    <div class="form-group">
+        <label th:for="wage">Wage</label>
+        <input class="form-control" th:field="*{wage}" />
+        <span th:errors="*{wage}" class="error"></span>
+    </div>
+    <div class="form-group">
+        <label th:for="phoneNumber">Phone Number</label>
+        <input class="form-control" th:field="*{phoneNumber}" />
+        <span th:errors="*{phoneNumber}" class="error"></span>
+    </div>
+    <div class="form-group">
+        <label th:for="email">Email</label>
+        <input class="form-control" th:field="*{email}" />
+        <span th:errors="*{email}" class="error"></span>
+    </div>
+
+
+    <div class="form-group">
+        <label th:for="employeeCategory">Employee Role</label>
+        <select name="employeeCategoryId">
+            <option th:each="employeeCategory : ${employeeCategories}"
+                    th:text="${employeeCategory.name}"
+                    th:value="${employeeCategory.id}"></option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label th:for="availability">Availability</label>
+        <input type="checkbox" name="shiftsAvailable" th:each="shift : ${shifts}"
+               th:text="|${shift.day} ${shift.startTimeHour}${shift.startTimeMinute} ${shift.startTimeAMPM} - ${shift.endTimeHour}${shift.endTimeMinute} ${shift.endTimeAMPM}|"
+               th:value="${shift.id}"/>
+
+
+
+    </div>
+
+    <input type="submit" class="btn btn-success" value="Add Employee"  />
+</form>
+<footer th:replace="fragments :: navigationFooter"></footer>
+</body>
+</html>

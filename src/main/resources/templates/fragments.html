@@ -4,26 +4,80 @@
     <meta charset="UTF-8"/>
     <title th:text="${title}">Default Title</title>
 
+
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
     <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
 </head>
 <body>
 
-<nav th:fragment="navigation">
-    <a href="/cheese">List</a> |
-    <a href="/cheese/add">Add</a> |
-    <a href="/cheese/remove">Remove</a> |
-    <a href="/category">Categories</a> |
-    <a href="/menu">Menus</a>
-</nav>
 
 <nav th:fragment="navigationLogin">
+    <div class="form-group">
     <a href="/login/registration" class="btn btn-primary" role="button">Sign Up!</a>
     <a href="/login/sign-in" class="btn btn-success" role="button">Sign In!</a>
-
-
+    </div>
 </nav>
+
+
+
+
+<nav th:fragment="navigationEmployee">
+    <div class="form-group">
+    <a href="/employee" class="btn btn-info">Employee List</a> |
+    <a href="/employee/add" class="btn btn-info">Add New Employee</a> |
+    <a href="/employee/remove" class="btn btn-info">Remove Employee</a>
+    </div>
+</nav>
+
+
+
+
+<nav th:fragment="navigationEmployeeCategory">
+    <div class="form-group">
+    <a href="/employeeCategory" class="btn btn-info">Employee Category List</a> |
+    <a href="/employeeCategory/add" class="btn btn-info">Add New Employee Category</a> |
+    <a href="/employeeCategory/remove" class="btn btn-info">Remove Employee Category</a>
+    </div>
+</nav>
+
+
+
+<nav th:fragment="navigationShifts">
+    <div class="form-group">
+    <a href="/shifts" class="btn btn-info">Shifts List</a> |
+    <a href="/shifts/add" class="btn btn-info">Add New Shift</a> |
+    <a href="/shifts/remove" class="btn btn-info">Remove Shift</a>
+    </div>
+</nav>
+
+
+
+
+<nav th:fragment="navigationSchedules">
+    <div class="form-group">
+    <a href="/schedules" class="btn btn-info">Schedules List</a> |
+    <a href="/schedules/add" class="btn btn-info">Add New Schedule</a> |
+    <a href="/schedules/remove" class="btn btn-info">Remove Schedule</a>
+    </div>
+</nav>
+
+
+
+
+<footer th:fragment="navigationFooter">
+    <div class="form-group .text-center">
+    <a href="/login/dashboard" class="btn btn-info">Dashboard </a> |
+    <a href="/employee" class="btn btn-info">Employees </a> |
+    <a href="/employeeCategory" class="btn btn-info">Employee Categories</a> |
+    <a href="/shifts" class="btn btn-info">Shifts</a> |
+    <a href="/schedules" class="btn btn-info">Schedules</a>
+    </div>
+</footer>
+
+
+
+
 
 </body>
 </html>

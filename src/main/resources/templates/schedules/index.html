@@ -5,6 +5,14 @@
 <body class="container">
 
 <h1 th:text="${title}">Default Title</h1>
+<nav th:replace="fragments :: navigationSchedules"></nav>
+
+<ul>
+    <li th:each="schedule : ${schedule}">
+        <a th:href="'schedule/view' + ${schedule.id}" th:text="${schedule.scheduleDates"></a>
+    </li>
+
+</ul>
 
 <footer th:replace="fragments :: navigationFooter"></footer>
 </body>

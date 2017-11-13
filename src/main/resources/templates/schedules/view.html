@@ -5,6 +5,13 @@
 <body class="container">
 
 <h1 th:text="${title}">Default Title</h1>
+<nav th:replace="fragments :: navigationSchedule"></nav>
+
+<ul>
+    <li th:each="shift : ${schedule.shiftsOfWeek}" th:text="${shift.day}" ></li>
+</ul>
+<p><a th:href="'/schedules/add-shift/' + ${schedule.id}">Add Shift to Schedule</a></p>
+
 
 <footer th:replace="fragments :: navigationFooter"></footer>
 </body>

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+<head th:replace="fragments :: head"></head>
+
+<body class="container">
+
+<h1 th:text="${title}">Default Title</h1>
+<nav th:replace="fragments :: navigationShifts"></nav>
+
+<form method="post" th:object="${form}">
+    <div class="form-group">
+        <label th:for="employeeId">Employee</label>
+        <select th:field="*{employeeId}">
+            <option th:each="employee : ${form.employees}"
+                    th:value="${employee.id}"
+                    th:text="${employee.name}"></option>
+        </select>
+    </div>
+
+    <input type="hidden" name="shiftId" th:value="*{shift.id}" />
+
+    <input type="submit" class="btn btn-success" value="Add Employee" />
+</form>
+
+
+
+<footer th:replace="fragments :: navigationFooter"></footer>
+</body>
+</html>

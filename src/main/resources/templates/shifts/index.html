@@ -2,9 +2,17 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org/">
 <head th:replace="fragments :: head"></head>
 
-<body class="container">
+<body class="container" >
 
 <h1 th:text="${title}">Default Title</h1>
+<nav th:replace="fragments :: navigationShifts"></nav>
+
+<ul>
+    <li th:each="shift : ${shifts}">
+        <a th:href="'shifts/view/' + ${shift.id}" th:text="${shift.day}"></a>
+    </li>
+</ul>
+
 
 <footer th:replace="fragments :: navigationFooter"></footer>
 </body>

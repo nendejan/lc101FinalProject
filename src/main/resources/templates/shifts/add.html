@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+<head th:replace="fragments :: head"></head>
+
+<body class="container">
+
+<h1 th:text="${title}">Default Title</h1>
+
+<nav th:replace="fragments :: navigationShifts"></nav>
+
+<form method="post" style="max-width:600px;" th:object="${shift}">
+
+    <div class="form-group">
+        <label th:for="day">Choose Day of Week</label>
+
+        <select th:field="*{day}">
+            <option th:value="Monday">Monday</option>
+            <option th:value="Tuesday">Tuesday</option>
+            <option th:value="Wednesday">Wednesday</option>
+            <option th:value="Thursday">Thursday</option>
+            <option th:value="Friday">Friday</option>
+            <option th:value="Saturday">Saturday</option>
+            <option th:value="Sunday">Sunday</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label th:for="startTimeHour">Choose Shift Start Time : </label>
+        <select th:field="*{startTimeHour}">
+            <option th:value="1">1</option>
+            <option th:value="2">2</option>
+            <option th:value="3">3</option>
+            <option th:value="4">4</option>
+            <option th:value="5">5</option>
+            <option th:value="6">6</option>
+            <option th:value="7">7</option>
+            <option th:value="8">8</option>
+            <option th:value="9">9</option>
+            <option th:value="10">10</option>
+            <option th:value="11">11</option>
+            <option th:value="12">12</option>
+
+        </select>
+
+        <select th:field="*{startTimeMinute}">
+            <option th:value="':00'">00</option>
+            <option th:value="':15'">15</option>
+            <option th:value="':30'">30</option>
+            <option th:value="':45'">45</option>
+
+        </select>
+
+        <select th:field="*{startTimeAMPM}">
+            <option th:value="AM">AM</option>
+            <option th:value="PM">PM</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label th:for="endTimeHour">Choose Shift End Time : </label>
+        <select th:field="*{endTimeHour}">
+            <option th:value="1">1</option>
+            <option th:value="2">2</option>
+            <option th:value="3">3</option>
+            <option th:value="4">4</option>
+            <option th:value="5">5</option>
+            <option th:value="6">6</option>
+            <option th:value="7">7</option>
+            <option th:value="8">8</option>
+            <option th:value="9">9</option>
+            <option th:value="10">10</option>
+            <option th:value="11">11</option>
+            <option th:value="12">12</option>
+
+        </select>
+
+        <select th:field="*{endTimeMinute}">
+            <option th:value="':00'">00</option>
+            <option th:value="':15'">15</option>
+            <option th:value="':30'">30</option>
+            <option th:value="':45'">45</option>
+
+        </select>
+
+        <select th:field="*{endTimeAMPM}">
+            <option th:value="AM">AM</option>
+            <option th:value="PM">PM</option>
+        </select>
+    </div>
+
+
+
+
+    <div class="form-group">
+    <input type="submit" class="btn btn-success" value="Create Shift"/>
+    </div>
+</form>
+
+<footer th:replace="fragments :: navigationFooter"></footer>
+</body>
+</html>

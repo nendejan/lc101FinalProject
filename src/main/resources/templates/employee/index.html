@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+<head th:replace="fragments :: head"></head>
+
+<body class="container">
+
+<h1 th:text="${title}">Default Title</h1>
+<nav th:replace="fragments :: navigationEmployee"></nav>
+
+<table class="table">
+
+    <tr>
+        <th>Name</th>
+        <th>Phone Number</th>
+        <th>Email</th>
+    </tr>
+
+    <tr th:each="employee : ${employees}">
+        <td th:text="${employee.name}"></td>
+        <td th:text="${employee.phoneNumber}"></td>
+        <td th:text="${employee.email}"></td>
+    </tr>
+
+</table>
+<footer th:replace="fragments :: navigationFooter"></footer>
+</body>
+</html>
