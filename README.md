@@ -41,3 +41,12 @@ What I'll Have to Learn
 
 Javascript
 Spring Security
+
+
+Sample Wireframes:
+
+![Alt text](https://drive.google.com/open?id=1pR5P0FWYpZZXqHMS_Q0f2QiGlw_GJm6aPwjPCpaXPtM "Login Page")
+![Alt text](https://drive.google.com/open?id=1AeTty8A2qfnOLcdY2U6dd6NFjF9ke2qtAf_4lCrE-E8 "Sign Up Page")
+![Alt text](https://drive.google.com/open?id=1EMqEX3IKbYaVtDp-LfPrE3tcDSR03NhX2u65uUBlz7A "View Selected Schedules")
+
+
