@@ -46,6 +46,11 @@ Spring Security
 Sample Wireframes:
 
 
+<p align="center">
+  <img src="https://github.com/nendejan/lc101FinalProject/files/1485966/login.page.pdf" width="350"/>
+  <img src="https://github.com/nendejan/lc101FinalProject/files/1485967/register.form.pdf width="350"/>
+</p>
+
 ![login page.pdf](https://github.com/nendejan/lc101FinalProject/files/1485966/login.page.pdf)
 ![register form.pdf](https://github.com/nendejan/lc101FinalProject/files/1485967/register.form.pdf)
 ![view schedule.pdf](https://github.com/nendejan/lc101FinalProject/files/1485968/view.schedule.pdf)
