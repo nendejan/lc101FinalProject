@@ -44,7 +44,7 @@ Spring Security
 
 
 Sample Wireframes:
-
+ <img src="https://github.com/nendejan/lc101FinalProject/files/1485966/login.page.pdf" width="350"/>
 
 <p align="center">
   <img src="https://github.com/nendejan/lc101FinalProject/files/1485966/login.page.pdf" width="350"/>
