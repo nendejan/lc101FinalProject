@@ -51,3 +51,8 @@ Sample Wireframes:
 
 ![View Select Schedule](https://github.com/nendejan/lc101FinalProject/files/1485968/view.schedule.pdf)
 
+
+Link to project's Pivotal Tracker:
+
+https://www.pivotaltracker.com/n/projects/2128497
+
