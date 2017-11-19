@@ -44,14 +44,10 @@ Spring Security
 
 
 Sample Wireframes:
- <img src="https://github.com/nendejan/lc101FinalProject/files/1485966/login.page.pdf" width="350"/>
 
-<p align="center">
-  <img src="https://github.com/nendejan/lc101FinalProject/files/1485966/login.page.pdf" width="350"/>
-  <img src="https://github.com/nendejan/lc101FinalProject/files/1485967/register.form.pdf width="350"/>
-</p>
+![Login](https://github.com/nendejan/lc101FinalProject/files/1485966/login.page.pdf)
 
-![Screenshot](https://github.com/nendejan/lc101FinalProject/files/1485966/login.page.pdf)
-![register form.pdf](https://github.com/nendejan/lc101FinalProject/files/1485967/register.form.pdf)
-![view schedule.pdf](https://github.com/nendejan/lc101FinalProject/files/1485968/view.schedule.pdf)
+![Register Form](https://github.com/nendejan/lc101FinalProject/files/1485967/register.form.pdf)
+
+![View Select Schedule](https://github.com/nendejan/lc101FinalProject/files/1485968/view.schedule.pdf)
 
