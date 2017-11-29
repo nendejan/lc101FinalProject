@@ -3,9 +3,12 @@ package com.nendejan.lc101FinalProject.controllers;
 
 import com.nendejan.lc101FinalProject.models.User;
 import com.nendejan.lc101FinalProject.models.data.UserDao;
-import org.mindrot.jbcrypt.BCrypt;
+
+import com.nendejan.lc101FinalProject.models.data.workplaceDao;
+import com.nendejan.lc101FinalProject.models.workplace;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -27,6 +30,8 @@ import javax.validation.Valid;
 @RequestMapping("login")
 public class UserController {
 
+    @Autowired
+    private workplaceDao workplaceDao;
     @Autowired
     private UserDao userDao;
 
@@ -189,14 +194,71 @@ public class UserController {
 
 
     @RequestMapping(value="/dashboard", method=RequestMethod.GET)
-    public String displayDashBoardPage(HttpServletRequest request, Model model, @CookieValue(value="loggedInCookie", defaultValue ="loggedInUserIdString") String cookieValue){
+    public String displayDashBoardPage(HttpServletRequest request, HttpServletResponse response, Model model, @CookieValue(value="loggedInCookie", defaultValue ="loggedInUserIdString") String cookieValue){
 
         int loggedInUserId = Integer.parseInt(cookieValue);
 
         User loggedInUser = userDao.findOne(loggedInUserId);
+
+
+        if(loggedInUser.getWorkplace() ==  null){
+            model.addAttribute("title", "Welcome, " + loggedInUser.getUsername() + "!" );
+            model.addAttribute("createAWorkplace", "Create A Workplace.");
+            model.addAttribute("findAWorkplace", "Find Your Workplace");
+            model.addAttribute("workplaces", workplaceDao.findAll());
+
+
+            /*TODO VALIDATION : Hash this cookie?*/
+            String cookieValueString = Integer.toString(loggedInUserId);
+            Cookie loggedInCookie = new Cookie("loggedInCookie", cookieValueString);
+            loggedInCookie.setMaxAge(24 * 60 * 60);
+            /* TODO how long should a user remain logged in?*/
+
+            response.addCookie(loggedInCookie);
+
+
+
+            return "login/dashboard";
+        }
+        model.addAttribute("createAWorkplace", "Create A Workplace.");
         model.addAttribute("title", "Welcome, " + loggedInUser.getUsername() + "!" );
+        model.addAttribute("workplaceName", "You work at " + loggedInUser.getWorkplace().getWorkplaceName() + ".");
+        return "login/dashboard";
+
+    }
+
+
+
+
+    @RequestMapping(value="/dashboard", method=RequestMethod.POST)
+    public String processDashBoardPage ( HttpServletRequest request, @RequestParam String usersWorkplace, Model model, @CookieValue(value="loggedInCookie", defaultValue ="loggedInUserIdString") String cookieValue){
+
+
+        int loggedInUserId = Integer.parseInt(cookieValue);
+
+        User loggedInUser = userDao.findOne(loggedInUserId);
+
+
+        workplace thisUsersWorkplace = workplaceDao.findByWorkplaceName(usersWorkplace);
+
+        loggedInUser.setWorkplace(thisUsersWorkplace);
+        thisUsersWorkplace.addUsers(loggedInUser);
+        userDao.save(loggedInUser);
+        workplaceDao.save(thisUsersWorkplace);
+
+
+
+
+
+
+
+
+        model.addAttribute("createAWorkplace", "Create A Workplace.");
+        model.addAttribute("title", "Welcome, " + loggedInUser.getUsername() + "!" );
+        model.addAttribute("workplaceName", "You work at " + loggedInUser.getWorkplace().getWorkplaceName() + ".");
 
         return "login/dashboard";
+
 
     }
 }
