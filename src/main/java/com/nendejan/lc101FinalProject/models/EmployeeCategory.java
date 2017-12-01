@@ -30,9 +30,17 @@ public class EmployeeCategory {
         this.name = name;
     }
 
+
+    
+    @ManyToOne
+    public workplace workplace;
+
     @OneToMany
     @JoinColumn(name = "category_id")
     private List<Employee> employees = new ArrayList<>();
+
+
+
 
     public int getId() {
         return id;
@@ -52,5 +60,13 @@ public class EmployeeCategory {
 
     public void setEmployees(List<Employee> employees) {
         this.employees = employees;
+    }
+
+    public com.nendejan.lc101FinalProject.models.workplace getWorkplace() {
+        return workplace;
+    }
+
+    public void setWorkplace(com.nendejan.lc101FinalProject.models.workplace workplace) {
+        this.workplace = workplace;
     }
 }
