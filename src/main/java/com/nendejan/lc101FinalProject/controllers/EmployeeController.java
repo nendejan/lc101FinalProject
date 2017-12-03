@@ -11,6 +11,7 @@ import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.ArrayList;
 
@@ -109,20 +110,41 @@ public class EmployeeController {
     }
 
     @RequestMapping(value = "remove", method = RequestMethod.GET)
-    public String displayRemoveEmployeeForm(Model model) {
-        model.addAttribute("employees", employeeDao.findAll());
+    public String displayRemoveEmployeeForm(Model model, HttpServletRequest request, HttpServletResponse response, @CookieValue(value="loggedInCookie") String cookieValue) {
+
+
+        int loggedInUserId = Integer.parseInt(cookieValue);
+
+        User loggedInUser = userDao.findOne(loggedInUserId);
+
+
+
+        model.addAttribute("employees", loggedInUser.getWorkplace().getEmployeeRoster());
         model.addAttribute("title", "Remove Employee");
         return "employee/remove";
     }
 
     @RequestMapping(value = "remove", method = RequestMethod.POST)
-    public String processRemoveEmployeeForm(@RequestParam int[] employeeIds) {
+    public String processRemoveEmployeeForm(Model model, HttpServletRequest request, @CookieValue(value="loggedInCookie") String cookieValue, @RequestParam String employeeToRemove) {
 
-        for (int employeeId : employeeIds) {
-            employeeDao.delete(employeeId);
-        }
 
-        return "redirect:";
+
+
+        int loggedInUserId = Integer.parseInt(cookieValue);
+
+        User loggedInUser = userDao.findOne(loggedInUserId);
+
+        model.addAttribute("employees", loggedInUser.getWorkplace().getEmployeeRoster());
+        model.addAttribute("title", "Remove Employee");
+
+        Employee removeMe = employeeDao.findByNameAndWorkplace(employeeToRemove, loggedInUser.getWorkplace());
+
+        loggedInUser.getWorkplace().removeEmployee(removeMe);
+        employeeDao.delete(removeMe);
+        workplaceDao.save(loggedInUser.getWorkplace());
+
+
+        return "employee/remove";
     }
 
 
