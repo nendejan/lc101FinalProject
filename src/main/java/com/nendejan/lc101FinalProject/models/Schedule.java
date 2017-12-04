@@ -25,12 +25,15 @@ public class Schedule {
     @ManyToMany
     private List<Shift> shiftsOfWeek = new ArrayList<>();
 
+    @ManyToOne
+    public workplace workplace;
+
+
+
     public Schedule() {
     }
     public Schedule(String scheduleDates, List<Shift> shiftsOfWeek) {
         this.scheduleDates = scheduleDates;
-
-
     }
 
     public void addShift(Shift shift){
