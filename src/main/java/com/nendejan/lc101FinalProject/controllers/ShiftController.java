@@ -2,10 +2,8 @@ package com.nendejan.lc101FinalProject.controllers;
 
 import com.nendejan.lc101FinalProject.models.Employee;
 import com.nendejan.lc101FinalProject.models.Shift;
-import com.nendejan.lc101FinalProject.models.data.EmployeeCategoryDao;
-import com.nendejan.lc101FinalProject.models.data.EmployeeDao;
-import com.nendejan.lc101FinalProject.models.data.ScheduleDao;
-import com.nendejan.lc101FinalProject.models.data.ShiftDao;
+import com.nendejan.lc101FinalProject.models.User;
+import com.nendejan.lc101FinalProject.models.data.*;
 import com.nendejan.lc101FinalProject.models.forms.AddShiftEmployeeForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -13,14 +11,24 @@ import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by nico on 6/30/2017.
  */
 @Controller
-@RequestMapping("shifts")
+@RequestMapping("login/shifts")
 public class ShiftController {
+
+    @Autowired
+    private workplaceDao workplaceDao;
+
+    @Autowired
+    private UserDao userDao;
 
     @Autowired
     private EmployeeDao employeeDao;
@@ -34,10 +42,14 @@ public class ShiftController {
     @Autowired
     private ScheduleDao scheduleDao;
 
-    @RequestMapping(value="")
-    public String index(Model model){
+    @RequestMapping(value="", method=RequestMethod.GET)
+    public String index(Model model, HttpServletRequest request, @CookieValue(value="loggedInCookie") String cookieValue){
 
-        model.addAttribute("shifts", shiftDao.findAll());
+        int loggedInUserId = Integer.parseInt(cookieValue);
+
+        User loggedInUser = userDao.findOne(loggedInUserId);
+
+        model.addAttribute("shifts", loggedInUser.getWorkplace().getWorkplaceShifts());
         model.addAttribute("title", "Shifts for Schedule");
 
 
@@ -45,10 +57,10 @@ public class ShiftController {
     }
 
     @RequestMapping(value = "add", method = RequestMethod.GET)
-    public String displayAddShiftForm(Model model, Shift shift) {
-        Shift newShift;
+    public String displayAddShiftForm(Model model) {
 
-        model.addAttribute("title", "Add Shift");
+
+         model.addAttribute("title", "Add Shift");
         model.addAttribute("shift", new Shift());
 
 
@@ -64,17 +76,22 @@ public class ShiftController {
     }
 
     @RequestMapping(value = "add", method = RequestMethod.POST)
-    public String processAddShiftForm(Model model, @ModelAttribute @Valid Shift shift, Errors errors) {
+    public String processAddShiftForm(Model model, HttpServletRequest request, @CookieValue(value="loggedInCookie") String cookieValue, @ModelAttribute @Valid Shift shift, Errors errors) {
+
+        int loggedInUserId = Integer.parseInt(cookieValue);
+
+        User loggedInUser = userDao.findOne(loggedInUserId);
 
         if(errors.hasErrors()) {
             model.addAttribute("title", "Add Shift");
             return "shifts/add";
         }
 
+        loggedInUser.getWorkplace().addShift(shift);
         shiftDao.save(shift);
-        return "redirect:view/" + shift.getId();
+        return "redirect:";
     }
-
+/*TODO Old logic, does this belong here? Should this mechanic be available when a schedule is made instead?
     @RequestMapping(value="add-employee/{shiftId}", method = RequestMethod.GET)
     public String addEmployee(Model model, @PathVariable int shiftId){
         Shift shift = shiftDao.findOne(shiftId);
@@ -102,24 +119,51 @@ public class ShiftController {
 
         return "redirect:../view/" + shift.getId();
     }
-
+*/
     @RequestMapping(value = "remove", method = RequestMethod.GET)
-    public String displayRemoveShiftForm(Model model) {
+    public String displayRemoveShiftForm(Model model, HttpServletRequest request, HttpServletResponse response, @CookieValue(value="loggedInCookie") String cookieValue) {
 
-        model.addAttribute("shifts", shiftDao.findAll());
+        int loggedInUserId = Integer.parseInt(cookieValue);
+
+        User loggedInUser = userDao.findOne(loggedInUserId);
+
+        boolean hasShifts = true;
+        if (loggedInUser.getWorkplace().getWorkplaceShifts().isEmpty()==true){
+
+            hasShifts = false;
+            model.addAttribute("hasShifts", false);
+            model.addAttribute("shifts", loggedInUser.getWorkplace().getWorkplaceShifts());
+            model.addAttribute("title", "No Shifts");
+
+            return "shifts/index";
+        }
+
+
+        model.addAttribute("hasShifts", true);
+        model.addAttribute("shifts", loggedInUser.getWorkplace().getWorkplaceShifts());
         model.addAttribute("title", "Remove Shifts");
         return "shifts/remove";
 
     }
 
     @RequestMapping(value = "remove", method = RequestMethod.POST)
-    public String processRemoveShiftForm(@RequestParam int[] shiftIds) {
+    public String processRemoveShiftForm(Model model, HttpServletRequest request, @CookieValue(value="loggedInCookie") String cookieValue, @RequestParam List<Integer> shiftsToRemove) {
 
-        for (int shiftId : shiftIds) {
-            shiftDao.delete(shiftId);
+        int loggedInUserId = Integer.parseInt(cookieValue);
+
+        User loggedInUser = userDao.findOne(loggedInUserId);
+
+        model.addAttribute("shifts", loggedInUser.getWorkplace().getWorkplaceShifts());
+        model.addAttribute("title", "Remove Shift");
+
+        for (Integer removeMeId : shiftsToRemove){
+            Shift removeMe = shiftDao.findOne(removeMeId);
+            loggedInUser.getWorkplace().removeShift(removeMe);
+            shiftDao.delete(removeMeId);
+
+
         }
-
-        return "redirect:";
+        return "redirect:/login/shifts/remove";
     }
 
 
