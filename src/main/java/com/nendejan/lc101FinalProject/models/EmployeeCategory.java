@@ -31,7 +31,7 @@ public class EmployeeCategory {
     }
 
 
-    
+
     @ManyToOne
     public workplace workplace;
 

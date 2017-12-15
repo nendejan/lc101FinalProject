@@ -1,9 +1,6 @@
 package com.nendejan.lc101FinalProject.controllers;
 
-import com.nendejan.lc101FinalProject.models.Employee;
-import com.nendejan.lc101FinalProject.models.Schedule;
-import com.nendejan.lc101FinalProject.models.Shift;
-import com.nendejan.lc101FinalProject.models.User;
+import com.nendejan.lc101FinalProject.models.*;
 import com.nendejan.lc101FinalProject.models.data.*;
 import com.nendejan.lc101FinalProject.models.forms.AddScheduleShiftForm;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -55,9 +53,6 @@ public class ScheduleController {
 
             model.addAttribute("schedules", loggedInUser.getWorkplace().getWorkplaceSchedules());
 
-
-
-            /*TODO LOGIC: this is returning the workplace's shift template, not a specific schedules shifts, the template cannot have employees like a schedules shift list can*/
             model.addAttribute("title", "Schedules");
 
             return "schedules/index";
@@ -65,7 +60,8 @@ public class ScheduleController {
         }
 
 
-        model.addAttribute("employees", loggedInUser.getWorkplace().getEmployeeRoster());
+
+
         model.addAttribute("hasSchedules", true);
         model.addAttribute("schedules", loggedInUser.getWorkplace().getWorkplaceSchedules());
 
@@ -80,7 +76,7 @@ public class ScheduleController {
 
 
     @RequestMapping(value = "", method = RequestMethod.POST)
-    public String processIndex(Model model, HttpServletRequest request, @CookieValue(value="loggedInCookie") String cookieValue, @RequestParam String addEmployeeToShift, @RequestParam  int shiftId, @RequestParam int scheduleId ) {
+    public String processIndex(HttpServletResponse response, @CookieValue(value="loggedInCookie") String cookieValue, @RequestParam String selectedSchedule, Model model ) {
 
         int loggedInUserId = Integer.parseInt(cookieValue);
 
@@ -93,32 +89,30 @@ public class ScheduleController {
 
             model.addAttribute("schedules", loggedInUser.getWorkplace().getWorkplaceSchedules());
 
-            /*TODO LOGIC: this is returning the workplace's shift template, not a specific schedules shifts, the template cannot have employees like a schedules shift list can*/
             model.addAttribute("title", "Schedules");
 
             return "schedules/index";
         }
 
 
-
-        /*uses parameters from form to find objects in reference to current users workplace*/
-
-        Schedule thisSchedule = scheduleDao.findByIdAndWorkplace(scheduleId, loggedInUser.getWorkplace());
-        Shift thisShift = shiftDao.findByIdAndWorkplace(shiftId, loggedInUser.getWorkplace());
-        Employee thisEmployee = employeeDao.findByNameAndWorkplace(addEmployeeToShift, loggedInUser.getWorkplace());
-
-
-        
-
-
-
-
-        model.addAttribute("employees", loggedInUser.getWorkplace().getEmployeeRoster());
         model.addAttribute("hasSchedules", true);
         model.addAttribute("schedules", loggedInUser.getWorkplace().getWorkplaceSchedules());
         model.addAttribute("title", "Schedules");
 
-        return"redirect:schedules/index";
+
+
+        Schedule thisSchedule = scheduleDao.findByScheduleDatesAndWorkplace(selectedSchedule, loggedInUser.getWorkplace());
+
+
+
+        String scheduleCookieValueString = Integer.toString(thisSchedule.getId());
+        Cookie thisScheduleCookie = new Cookie("thisScheduleCookie", scheduleCookieValueString);
+        thisScheduleCookie.setMaxAge(24 * 60 * 60);
+
+        response.addCookie(thisScheduleCookie);
+
+
+        return"redirect:schedules/view";
     }
 
 
@@ -138,7 +132,7 @@ public class ScheduleController {
     }
 
     @RequestMapping(value = "add", method = RequestMethod.POST)
-    public String processAddScheduleForm(Model model, @ModelAttribute @Valid Schedule schedule, Errors errors,  HttpServletRequest request, @CookieValue(value="loggedInCookie") String cookieValue){
+    public String processAddScheduleForm(Model model, @ModelAttribute @Valid Schedule schedule, Errors errors,  HttpServletResponse response, @CookieValue(value="loggedInCookie") String cookieValue){
 
         int loggedInUserId = Integer.parseInt(cookieValue);
 
@@ -150,32 +144,233 @@ public class ScheduleController {
         }
 
 
+
+
         for(Shift shift : loggedInUser.getWorkplace().getWorkplaceShifts()){
-            schedule.addShift(shift);}
+            Shift shiftClone = new Shift();
+
+            shiftClone.setDay(shift.getDay());
+            shiftClone.setStartTimeHour(shift.getStartTimeHour());
+            shiftClone.setStartTimeMinute(shift.getStartTimeMinute());
+            shiftClone.setStartTimeAMPM(shift.getStartTimeAMPM());
+            shiftClone.setEndTimeHour(shift.getEndTimeHour());
+            shiftClone.setEndTimeMinute(shift.getEndTimeMinute());
+            shiftClone.setEndTimeAMPM(shift.getEndTimeAMPM());
+            shiftClone.setWorkplace(shift.getWorkplace());
+
+
+            shiftDao.save(shiftClone);
+            schedule.addShift(shiftClone);
+            scheduleDao.save(schedule);
+        }
 
 
         loggedInUser.getWorkplace().addSchedule(schedule);
         scheduleDao.save(schedule);
-        return "redirect:/login/schedules";
+
+
+
+
+
+        String scheduleCreationCookieValueString = Integer.toString(schedule.getId());
+        Cookie newScheduleCookie = new Cookie("newScheduleCookie", scheduleCreationCookieValueString);
+        newScheduleCookie.setMaxAge(24 * 60 * 60);
+
+        response.addCookie(newScheduleCookie);
+
+
+        return "redirect:/login/schedules/addEmployee";
     }
-/*
-    @RequestMapping(value = "view", method = RequestMethod.GET)
-    public String viewSchedule(@PathVariable int id, Model model,  HttpServletRequest request, @CookieValue(value="loggedInCookie") String cookieValue) {
+
+    @RequestMapping(value = "addEmployee", method = RequestMethod.GET)
+    public String displayAddEmployeeToShiftOnScheduleForm(Model model, HttpServletRequest request, @CookieValue(value="loggedInCookie") String cookieValue, @CookieValue(value="newScheduleCookie") String newScheduleCookieValue, @RequestParam(required = false) Integer shiftId, @RequestParam(required = false) String addEmployeeToShift) {
 
         int loggedInUserId = Integer.parseInt(cookieValue);
 
         User loggedInUser = userDao.findOne(loggedInUserId);
 
+        int newScheduleId = Integer.parseInt(newScheduleCookieValue);
 
-        Schedule schedule = scheduleDao.findOne(id);
-        model.addAttribute("title", schedule.getScheduleDates());
-        model.addAttribute("schedule", schedule);
+        Schedule newSchedule = scheduleDao.findOne(newScheduleId);
+
+
+
+        if(loggedInUser.getWorkplace().getWorkplaceSchedules().isEmpty()== true){
+            model.addAttribute("hasSchedules", false);
+            model.addAttribute("displayMessage", "This Workplace doesn't seem to have any schedules setup... How did you get here?????");
+            model.addAttribute("newSchedule", null);
+            model.addAttribute("title", "Employee Setup");
+            model.addAttribute("shiftSelected", false);
+
+            return "schedules/addEmployee";
+
+        }
+
+        if(shiftId == null){
+            model.addAttribute("displayMessage", "Choose a shift to start adding employees to: ");
+            model.addAttribute("shiftSelected", false);
+            model.addAttribute("employees", loggedInUser.getWorkplace().getEmployeeRoster());
+            model.addAttribute("hasSchedules", true);
+            model.addAttribute("newSchedule", newSchedule);
+            model.addAttribute("title", "Employee Setup");
+
+        return "schedules/addEmployee";}
+
+        if(shiftId != null){
+            model.addAttribute("thisShift", shiftDao.findByIdAndWorkplace(shiftId, loggedInUser.getWorkplace()));
+            model.addAttribute("displayMessage", "Choose which employee to add to shift: ");
+            model.addAttribute("shiftSelected", true);
+            model.addAttribute("employees", loggedInUser.getWorkplace().getEmployeeRoster());
+            model.addAttribute("hasSchedules", true);
+            model.addAttribute("newSchedule", newSchedule);
+            model.addAttribute("title", "Employee Setup");
+
+
+            return "redirect:";
+
+        }
+        return "schedules/addEmployee";
+    }
+
+    @RequestMapping(value="addEmployee", method= RequestMethod.POST)
+    public String processAddEmployeeToShiftOnScheduleForm(Model model, HttpServletResponse response, @CookieValue(value="loggedInCookie") String cookieValue, @CookieValue(value="newScheduleCookie") String newScheduleCookieValue, @RequestParam(required = false) Integer shiftId, @RequestParam(required = false) String addEmployeeToShift) {
+
+        int loggedInUserId = Integer.parseInt(cookieValue);
+
+        User loggedInUser = userDao.findOne(loggedInUserId);
+
+        int newScheduleId = Integer.parseInt(newScheduleCookieValue);
+
+        Schedule newSchedule = scheduleDao.findOne(newScheduleId);
+
+
+
+        if(loggedInUser.getWorkplace().getWorkplaceSchedules().isEmpty()== true){
+            model.addAttribute("hasSchedules", false);
+            model.addAttribute("displayMessage", "This Workplace doesn't seem to have any schedules setup...How did you get here?????");
+            model.addAttribute("newSchedule", null);
+            model.addAttribute("title", "Employee Setup");
+            model.addAttribute("shiftSelected", false);
+
+            return "schedules/addEmployee";
+
+        }
+        if(shiftId == null){
+            model.addAttribute("displayMessage", "Choose a shift to start adding employees to: ");
+            model.addAttribute("shiftSelected", false);
+            model.addAttribute("employees", loggedInUser.getWorkplace().getEmployeeRoster());
+            model.addAttribute("hasSchedules", true);
+            model.addAttribute("newSchedule", newSchedule);
+            model.addAttribute("title", "Employee Setup");
+
+            return "schedules/addEmployee";}
+
+        if(shiftId != null){
+            model.addAttribute("thisShift", shiftDao.findByIdAndWorkplace(shiftId, loggedInUser.getWorkplace()));
+            model.addAttribute("displayMessage", "Choose which employee to add to shift: ");
+            model.addAttribute("shiftSelected", true);
+            model.addAttribute("employees", loggedInUser.getWorkplace().getEmployeeRoster());
+            model.addAttribute("hasSchedules", true);
+            model.addAttribute("newSchedule", newSchedule);
+            model.addAttribute("title", "Employee Setup");
+
+            Shift thisShift = shiftDao.findByIdAndWorkplace(shiftId, loggedInUser.getWorkplace());
+            Employee thisEmployee = employeeDao.findByNameAndWorkplace(addEmployeeToShift, loggedInUser.getWorkplace());
+
+            thisShift.addEmployee(thisEmployee);
+            shiftDao.save(thisShift);
+            thisEmployee.addShiftToScheduledShifts(thisShift);
+            employeeDao.save(thisEmployee);
+/*TODO Getting nullpointer here*/
+            return "schedules/addEmployee";}
+
+        String scheduleCookieValueString = Integer.toString(newSchedule.getId());
+        Cookie thisScheduleCookie = new Cookie("thisScheduleCookie", scheduleCookieValueString);
+        thisScheduleCookie.setMaxAge(24 * 60 * 60);
+
+        response.addCookie(thisScheduleCookie);
+
+
+
 
         return "schedules/view";
-    }*/
+    }
+
+    @RequestMapping(value = "view", method = RequestMethod.GET)
+    public String displayViewScheduleForm(Model model, HttpServletRequest request, @CookieValue(value="loggedInCookie") String cookieValue, @CookieValue(value="thisScheduleCookie") String scheduleCookieValue) {
+
+        int loggedInUserId = Integer.parseInt(cookieValue);
+
+        User loggedInUser = userDao.findOne(loggedInUserId);
+
+        int thisScheduleCookieId = Integer.parseInt(scheduleCookieValue);
+
+        Schedule thisSchedule = scheduleDao.findOne(thisScheduleCookieId);
+
+        if(loggedInUser.getWorkplace().getWorkplaceSchedules().isEmpty()== true){
+            model.addAttribute("hasSchedules", false);
+
+            model.addAttribute("thisSchedule", null);
 
 
-    @RequestMapping(value="remove", method= RequestMethod.GET)
+
+            /*TODO LOGIC: this is returning the workplace's shift template, not a specific schedules shifts, the template cannot have employees like a schedules shift list can*/
+            model.addAttribute("title", "Schedules");
+
+            return "schedules/view";
+
+        }
+
+
+
+        model.addAttribute("hasSchedules", true);
+        model.addAttribute("thisSchedule", thisSchedule);
+
+
+
+
+        model.addAttribute("title", "Schedules");
+
+
+
+        return "schedules/view";
+    }
+
+    @RequestMapping(value = "view", method = RequestMethod.POST)
+    public String processViewScheduleForm(Model model, HttpServletRequest request, @CookieValue(value="loggedInCookie") String cookieValue, @CookieValue(value="thisScheduleCookie") String scheduleCookieValue) {
+
+        int loggedInUserId = Integer.parseInt(cookieValue);
+
+        User loggedInUser = userDao.findOne(loggedInUserId);
+
+        int thisScheduleCookieId = Integer.parseInt(scheduleCookieValue);
+
+        Schedule thisSchedule = scheduleDao.findOne(thisScheduleCookieId);
+
+
+        if (loggedInUser.getWorkplace().getWorkplaceSchedules().isEmpty() == true) {
+            model.addAttribute("hasSchedules", false);
+
+            model.addAttribute("thisSchedule", null);
+
+            /*TODO LOGIC: this is returning the workplace's shift template, not a specific schedules shifts, the template cannot have employees like a schedules shift list can*/
+            model.addAttribute("title", "Schedules");
+
+            return "schedules/view";
+        }
+
+
+
+        model.addAttribute("hasSchedules", true);
+        model.addAttribute("thisSchedule", thisSchedule);
+        model.addAttribute("title", "Schedules");
+
+        return "schedules/view";
+
+    }
+
+
+        @RequestMapping(value="remove", method= RequestMethod.GET)
     public String displayRemoveScheduleForm(Model model, HttpServletRequest request, HttpServletResponse response, @CookieValue(value="loggedInCookie") String cookieValue) {
 
 
@@ -200,21 +395,34 @@ public class ScheduleController {
     }
 
     @RequestMapping(value = "remove", method = RequestMethod.POST)
-    public String processRemoveScheduleForm(@RequestParam List<Integer> schedulesToRemove,  HttpServletRequest request, HttpServletResponse response, @CookieValue(value="loggedInCookie") String cookieValue){
+    public String processRemoveScheduleForm(@RequestParam int scheduleToRemove,  HttpServletRequest request, HttpServletResponse response, @CookieValue(value="loggedInCookie") String cookieValue){
 
         int loggedInUserId = Integer.parseInt(cookieValue);
 
         User loggedInUser = userDao.findOne(loggedInUserId);
 
-        for(Integer removeMeId : schedulesToRemove){
-            Schedule removeMe = scheduleDao.findOne(removeMeId);
-            loggedInUser.getWorkplace().removeSchedule(removeMe);
+        workplace thisWorkplace = loggedInUser.getWorkplace();
+
+        Schedule removeMe = scheduleDao.findOne(scheduleToRemove);
 
 
 
-          scheduleDao.delete(removeMeId);
+
+        for(Shift deleteThisShift : removeMe.getShiftsOfWeek()){
+            thisWorkplace.removeShift(deleteThisShift);
 
         }
+        removeMe.getShiftsOfWeek().clear();
+
+        for(Shift deleteThisShift : removeMe.getShiftsOfWeek()){
+        shiftDao.delete(deleteThisShift);}
+
+
+
+        loggedInUser.getWorkplace().removeSchedule(removeMe);
+        scheduleDao.delete(removeMe);
+
+
 
 
 

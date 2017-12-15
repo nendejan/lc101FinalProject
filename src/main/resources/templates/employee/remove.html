@@ -7,6 +7,13 @@
 <h1 th:text="${title}">Default Title</h1>
 <nav th:replace="fragments :: navigationEmployee"></nav>
 
+<form method="post" style="max width:300px">
+    <div class="form-group">
+        <input th:each="employee : ${employees}" th:value="${employee.name}" name="employeeToRemove" type="submit" class="btn btn-success"/>
+    </div>
+</form>
+
+
 <footer th:replace="fragments :: navigationFooter"></footer>
 </body>
 </html>

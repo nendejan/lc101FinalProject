@@ -1,6 +1,7 @@
 package com.nendejan.lc101FinalProject.controllers;
 import com.nendejan.lc101FinalProject.models.Employee;
 import com.nendejan.lc101FinalProject.models.EmployeeCategory;
+import com.nendejan.lc101FinalProject.models.Shift;
 import com.nendejan.lc101FinalProject.models.User;
 import com.nendejan.lc101FinalProject.models.data.*;
 
@@ -14,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -56,7 +58,7 @@ public class EmployeeController {
             model.addAttribute("hasEmployees", false);
 
             model.addAttribute("employees", loggedInUser.getWorkplace().getEmployeeRoles());
-            model.addAttribute("title", "No Employees");
+            model.addAttribute("title", "Employee List");
 
             return "employee/index";
 
@@ -80,13 +82,13 @@ public class EmployeeController {
         model.addAttribute(new Employee());
         model.addAttribute("employeeRoleSelection", "Choose Employee Role");
         model.addAttribute("employeeCategories", loggedInUser.getWorkplace().getEmployeeRoles());
-        model.addAttribute("shifts", shiftDao.findAll());
-/*TODO Fix shifts here!!*/
+        model.addAttribute("shifts", loggedInUser.getWorkplace().getWorkplaceShifts());
+
         return "employee/add";
     }
 
     @RequestMapping(value = "add", method = RequestMethod.POST)
-    public String processAddEmployeeForm(@ModelAttribute @Valid Employee newEmployee, Errors errors, @RequestParam String employeeCategoryName, Model model, HttpServletRequest request, @CookieValue(value="loggedInCookie") String cookieValue) {
+    public String processAddEmployeeForm(@ModelAttribute @Valid Employee newEmployee, Errors errors, @RequestParam String employeeCategoryName, @RequestParam List<Integer> shiftsAvailable, Model model, HttpServletRequest request, @CookieValue(value="loggedInCookie") String cookieValue) {
 
         int loggedInUserId = Integer.parseInt(cookieValue);
 
@@ -98,13 +100,19 @@ public class EmployeeController {
         }
 
         EmployeeCategory cat = employeeCategoryDao.findByNameAndWorkplace(employeeCategoryName, loggedInUser.getWorkplace());
-
+        List<Shift> shiftsToAdd =new ArrayList<>();
         loggedInUser.getWorkplace().addEmployee(newEmployee);
+        for (Integer shiftId : shiftsAvailable){
+            shiftsToAdd.add(shiftDao.findOne(shiftId));
 
 
+        }
+
+        newEmployee.setAvailability(shiftsToAdd);
         newEmployee.setEmployeeCategory(cat);
-        employeeDao.save(newEmployee);
 
+        employeeDao.save(newEmployee);
+        List<Shift> shiftCheck = newEmployee.getAvailability();
         return "redirect:";
 
     }

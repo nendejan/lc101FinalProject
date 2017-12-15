@@ -9,7 +9,7 @@
 
 <ul>
     <li th:each="shift : ${shifts}">
-        <a th:href="'shifts/view/' + ${shift.id}" th:text="${shift.day}"></a>
+        <a th:href="'shifts/view/' + ${shift.id}" th:text="${shift.day + ' ' + shift.startTimeHour + shift.startTimeAMPM + ' - ' + shift.endTimeHour + shift.endTimeAMPM}"></a>
     </li>
 </ul>
 

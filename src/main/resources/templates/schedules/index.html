@@ -7,12 +7,22 @@
 <h1 th:text="${title}">Default Title</h1>
 <nav th:replace="fragments :: navigationSchedules"></nav>
 
-<ul>
-    <li th:each="schedule : ${schedule}">
-        <a th:href="'schedule/view' + ${schedule.id}" th:text="${schedule.scheduleDates"></a>
-    </li>
 
-</ul>
+<form th:if="${hasSchedules == true}" method="post" style="max width:300px;">
+    <div class="form-group">
+
+        <input th:each="schedule : ${schedules}" th:value="${schedule.scheduleDates}" name="selectedSchedule" type="submit" class="btn btn-success"/>
+
+    </div>
+</form>
+
+<form th:if="${hasSchedules== false}" method="post" style="max width:300px;">
+    <div class="form-group">
+        <h3>This Workplace doesn't seem to have any schedules setup...</h3>
+    </div>
+</form>
+
+
 
 <footer th:replace="fragments :: navigationFooter"></footer>
 </body>

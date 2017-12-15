@@ -5,7 +5,28 @@
 <body class="container">
 
 <h1 th:text="${title}">Default Title</h1>
-<nav th:replace="fragments :: navigationEmployee"></nav>
+<nav th:replace="fragments :: navigationShifts"></nav>
+
+<form th:if="${hasShifts == true}" method="post" style="max width:300px">
+    <div class="form-group">
+        <ul>
+            <li th:each="shift : ${shifts}" >
+                <div class="form-group">
+                    <input th:value="${shift.id}" th:text="${' ' + shift.day + ' ' + shift.startTimeHour + shift.startTimeAMPM + ' - ' + shift.endTimeHour + shift.endTimeAMPM}" type="checkbox"  name="shiftsToRemove"/>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div class="form-group">
+        <input type="submit" class="btn btn-danger"/>
+    </div>
+</form>
+
+<form th:if="${hasShifts == false}" method="post" style="max width:300px">
+    <div class="form-group">
+    <h3>This workplace doesn't seem to have any shifts setup, lets add some!</h3>
+    </div>
+</form>
 
 <footer th:replace="fragments :: navigationFooter"></footer>
 </body>

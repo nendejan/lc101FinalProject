@@ -25,8 +25,26 @@ public class Schedule {
     @ManyToMany
     private List<Shift> shiftsOfWeek = new ArrayList<>();
 
+    public void addShift(Shift thisShift){
+        this.shiftsOfWeek.add(thisShift);}
+
+    public void removeShift(Shift thisShift){
+        this.shiftsOfWeek.remove(thisShift);}
+
     @ManyToOne
     public workplace workplace;
+
+    @ManyToMany
+    private List<Employee> scheduledEmployees = new ArrayList<>();
+
+
+
+    public void addEmployee (Employee thisEmployee){
+        this.scheduledEmployees.add(thisEmployee);}
+
+    public void removeEmployee (Employee thisEmployee){
+        this.scheduledEmployees.remove(thisEmployee);}
+
 
 
 
@@ -36,8 +54,7 @@ public class Schedule {
         this.scheduleDates = scheduleDates;
     }
 
-    public void addShift(Shift shift){
-        shiftsOfWeek.add(shift);}
+
 
     public int getId() {
         return id;
@@ -55,5 +72,23 @@ public class Schedule {
         this.shiftsOfWeek = shiftsOfWeek;
     }
 
+    public void setScheduleDates(String scheduleDates) {
+        this.scheduleDates = scheduleDates;
+    }
 
+    public com.nendejan.lc101FinalProject.models.workplace getWorkplace() {
+        return workplace;
+    }
+
+    public void setWorkplace(com.nendejan.lc101FinalProject.models.workplace workplace) {
+        this.workplace = workplace;
+    }
+
+    public List<Employee> getScheduledEmployees() {
+        return scheduledEmployees;
+    }
+
+    public void setScheduledEmployees(List<Employee> scheduledEmployees) {
+        this.scheduledEmployees = scheduledEmployees;
+    }
 }

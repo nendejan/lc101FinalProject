@@ -202,6 +202,7 @@ public class UserController {
 
 
         if(loggedInUser.getWorkplace() ==  null){
+            model.addAttribute("userHasWorkplace", false);
             model.addAttribute("title", "Welcome, " + loggedInUser.getUsername() + "!" );
             model.addAttribute("createAWorkplace", "Create A Workplace.");
             model.addAttribute("findAWorkplace", "Find Your Workplace");
@@ -220,6 +221,8 @@ public class UserController {
 
             return "login/dashboard";
         }
+        model.addAttribute("userHasWorkplace", true
+        );
         model.addAttribute("createAWorkplace", "Create A Workplace.");
         model.addAttribute("title", "Welcome, " + loggedInUser.getUsername() + "!" );
         model.addAttribute("workplaceName", "You work at " + loggedInUser.getWorkplace().getWorkplaceName() + ".");
@@ -231,7 +234,7 @@ public class UserController {
 
 
     @RequestMapping(value="/dashboard", method=RequestMethod.POST)
-    public String processDashBoardPage ( HttpServletRequest request, @RequestParam String usersWorkplace, Model model, @CookieValue(value="loggedInCookie", defaultValue ="loggedInUserIdString") String cookieValue){
+    public String processDashBoardPage ( HttpServletRequest request, HttpServletResponse response, @RequestParam String usersWorkplace, Model model, @CookieValue(value="loggedInCookie", defaultValue ="loggedInUserIdString") String cookieValue){
 
 
         int loggedInUserId = Integer.parseInt(cookieValue);
@@ -252,10 +255,13 @@ public class UserController {
 
 
 
-
+        model.addAttribute("userHasWorkplace", true);
         model.addAttribute("createAWorkplace", "Create A Workplace.");
         model.addAttribute("title", "Welcome, " + loggedInUser.getUsername() + "!" );
         model.addAttribute("workplaceName", "You work at " + loggedInUser.getWorkplace().getWorkplaceName() + ".");
+
+
+
 
         return "login/dashboard";
 

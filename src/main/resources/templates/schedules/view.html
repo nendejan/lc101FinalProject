@@ -5,12 +5,35 @@
 <body class="container">
 
 <h1 th:text="${title}">Default Title</h1>
-<nav th:replace="fragments :: navigationSchedule"></nav>
+<nav th:replace="fragments :: navigationSchedules"></nav>
 
-<ul>
-    <li th:each="shift : ${schedule.shiftsOfWeek}" th:text="${shift.day}" ></li>
-</ul>
-<p><a th:href="'/schedules/add-shift/' + ${schedule.id}">Add Shift to Schedule</a></p>
+
+<form th:if="${hasSchedules == true}" method="post" style="max width:300px;">
+    <div class="form-group">
+        <table class="table">
+
+            <tr>
+                <th th:text="'Schedule Dates: ' +  ${thisSchedule.scheduleDates}"></th>
+            </tr>
+
+            <tr th:each="shift : ${thisSchedule.shiftsOfWeek}" th:value="${shift.id}" name="shiftId">
+                <td th:text="${shift.day} + ' ' + ${shift.startTimeAMPM}"></td>
+                <td th:if="${shift.employees.isEmpty() == false}" th:text="${shift.employees.name}"></td>
+            </tr>
+            <div class="form-group">
+            </div>
+
+        </table>
+
+    </div>
+</form>
+
+<form th:if="${hasSchedules== false}" method="post" style="max width:300px;">
+    <div class="form-group">
+        <h3>This Workplace doesn't seem to have any schedules setup...</h3>
+    </div>
+</form>
+
 
 
 <footer th:replace="fragments :: navigationFooter"></footer>

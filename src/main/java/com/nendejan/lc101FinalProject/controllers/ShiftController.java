@@ -1,6 +1,7 @@
 package com.nendejan.lc101FinalProject.controllers;
 
 import com.nendejan.lc101FinalProject.models.Employee;
+import com.nendejan.lc101FinalProject.models.Schedule;
 import com.nendejan.lc101FinalProject.models.Shift;
 import com.nendejan.lc101FinalProject.models.User;
 import com.nendejan.lc101FinalProject.models.data.*;
@@ -67,13 +68,6 @@ public class ShiftController {
         return "shifts/add";
     }
 
-    @RequestMapping(value = "view/{id}", method = RequestMethod.GET)
-    public String viewShift(@PathVariable int id, Model model) {
-        Shift shift =shiftDao.findOne(id);
-        model.addAttribute("title", shift.getDay());
-        model.addAttribute("shift", shift);
-        return "shifts/view";
-    }
 
     @RequestMapping(value = "add", method = RequestMethod.POST)
     public String processAddShiftForm(Model model, HttpServletRequest request, @CookieValue(value="loggedInCookie") String cookieValue, @ModelAttribute @Valid Shift shift, Errors errors) {
@@ -91,35 +85,7 @@ public class ShiftController {
         shiftDao.save(shift);
         return "redirect:";
     }
-/*TODO Old logic, does this belong here? Should this mechanic be available when a schedule is made instead?
-    @RequestMapping(value="add-employee/{shiftId}", method = RequestMethod.GET)
-    public String addEmployee(Model model, @PathVariable int shiftId){
-        Shift shift = shiftDao.findOne(shiftId);
-        AddShiftEmployeeForm employeeForm = new AddShiftEmployeeForm(shift, employeeDao.findAll());
 
-        model.addAttribute("title", "Add Employee to Shift: " + shift.getDay());
-        model.addAttribute("form", employeeForm);
-
-        return "shifts/add-employee";
-
-    }
-
-    @RequestMapping(value="add-employee/{shiftId}", method = RequestMethod.POST)
-    public String addEmployee(Model model, @ModelAttribute @Valid AddShiftEmployeeForm employeeForm, Errors errors, @PathVariable int shiftId){
-        if(errors.hasErrors()){
-            model.addAttribute("title", "Add Employee");
-            return "shifts/add-employee" + shiftId;
-        }
-
-        Shift shift = shiftDao.findOne(employeeForm.getShiftId());
-        Employee employee = employeeDao.findOne(employeeForm.getEmployeeId());
-
-        shift.addEmployee(employee);
-        shiftDao.save(shift);
-
-        return "redirect:../view/" + shift.getId();
-    }
-*/
     @RequestMapping(value = "remove", method = RequestMethod.GET)
     public String displayRemoveShiftForm(Model model, HttpServletRequest request, HttpServletResponse response, @CookieValue(value="loggedInCookie") String cookieValue) {
 
@@ -127,13 +93,13 @@ public class ShiftController {
 
         User loggedInUser = userDao.findOne(loggedInUserId);
 
-        boolean hasShifts = true;
+
         if (loggedInUser.getWorkplace().getWorkplaceShifts().isEmpty()==true){
 
-            hasShifts = false;
+
             model.addAttribute("hasShifts", false);
             model.addAttribute("shifts", loggedInUser.getWorkplace().getWorkplaceShifts());
-            model.addAttribute("title", "No Shifts");
+            model.addAttribute("title", "Remove Shifts");
 
             return "shifts/index";
         }
@@ -159,6 +125,12 @@ public class ShiftController {
         for (Integer removeMeId : shiftsToRemove){
             Shift removeMe = shiftDao.findOne(removeMeId);
             loggedInUser.getWorkplace().removeShift(removeMe);
+
+            for(Schedule schedule :loggedInUser.getWorkplace().getWorkplaceSchedules()){
+                schedule.removeShift(removeMe);
+            }
+
+
             shiftDao.delete(removeMeId);
 
 

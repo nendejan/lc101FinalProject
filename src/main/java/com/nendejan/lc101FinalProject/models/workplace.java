@@ -27,14 +27,62 @@ public class workplace {
     @JoinColumn(name="workplace_id")
     private List<User> users = new ArrayList<>();
 
-/*
+    public void addUsers(User thisUser){
+        this.users.add(thisUser);}
+
+
+    @OneToMany
+    @JoinColumn(name="workplace_id")
+    private List<Employee> employeeRoster = new ArrayList<>();
+
+    public void addEmployee(Employee thisEmployee){
+        this.employeeRoster.add(thisEmployee);}
+
+    public void removeEmployee(Employee thisEmployee){
+        this.employeeRoster.remove(thisEmployee);}
+
+
+    @OneToMany
+    @JoinColumn(name="workplace_id")
+    private List<EmployeeCategory> employeeRoles
+ = new ArrayList<>();
+
+    public void addEmployeeCategory (EmployeeCategory thisCategory){
+        this.employeeRoles.add(thisCategory);}
+
+    public void removeEmployeeCategory (EmployeeCategory thisCategory){
+        this.employeeRoles.remove(thisCategory);}
+
+    @OneToMany
+    @JoinColumn(name="workplace_id")
+    private List<Shift> workplaceShifts = new ArrayList<>();
+
+    public void addShift (Shift thisShift){
+        this.workplaceShifts.add(thisShift);}
+
+    public void removeShift (Shift thisShift){
+        this.workplaceShifts.remove(thisShift);}
+
+    @OneToMany
+    @JoinColumn(name="workplace_id")
+    private List<Schedule> workplaceSchedules = new ArrayList<>();
+
+    public void addSchedule (Schedule thisSchedule){
+        this.workplaceSchedules.add(thisSchedule);}
+
+    public void removeSchedule(Schedule thisSchedule){
+        this.workplaceSchedules.remove(thisSchedule);}
+
+
+
+
+    /*
 
 TODO Implement later
-    private List<Employee> employeeRoster = new ArrayList<>();
+
 
     private List<Schedule> workplaceSchedules = new ArrayList<>();
 
-    private List<Shift> workplaceShifts = new ArrayList<>();
 
     private List<User> workplaceAdmin = new ArrayList<>();
     */
@@ -60,8 +108,36 @@ TODO Implement later
         this.users = users;
     }
 
-    public void addUsers(User thisUser){
-        this.users.add(thisUser);
+    public List<Employee> getEmployeeRoster() {
+        return employeeRoster;
+    }
 
+    public void setEmployeeRoster(List<Employee> employeeRoster) {
+        this.employeeRoster = employeeRoster;
+    }
+
+    public List<EmployeeCategory> getEmployeeRoles() {
+        return employeeRoles;
+    }
+
+    public void setEmployeeRoles(List<EmployeeCategory> employeeRoles) {
+        this.employeeRoles = employeeRoles;
+    }
+
+    public List<Shift> getWorkplaceShifts() {
+        return workplaceShifts;
+    }
+
+    public void setWorkplaceShifts(List<Shift> workplaceShifts) {
+        this.workplaceShifts = workplaceShifts;
+    }
+
+    public List<Schedule> getWorkplaceSchedules() {
+        return workplaceSchedules;
+    }
+
+    public void setWorkplaceSchedules(List<Schedule> workplaceSchedules) {
+        this.workplaceSchedules = workplaceSchedules;
     }
 }
+

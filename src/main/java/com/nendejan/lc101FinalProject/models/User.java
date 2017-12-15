@@ -9,6 +9,8 @@ import javax.persistence.Id;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -34,6 +36,12 @@ public class User {
     @NotNull
 
     private String email;
+
+
+    @ManyToOne
+
+    public workplace workplace;
+
 
 
     public User() {}
@@ -82,4 +90,18 @@ public class User {
     public void setEmail(String email) {
         this.email = email;
     }
+
+    public com.nendejan.lc101FinalProject.models.workplace getWorkplace() {
+        return workplace;
+    }
+
+    public void setWorkplace(com.nendejan.lc101FinalProject.models.workplace workplace) {
+        this.workplace = workplace;
+    }
+
+
+
 }
+
+
+/* TODO create a function that gets a user's workplace by its ID*/

@@ -5,7 +5,28 @@
 <body class="container">
 
 <h1 th:text="${title}">Default Title</h1>
-<nav th:replace="fragments :: navigationEmployee"></nav>
+<nav th:replace="fragments :: navigationSchedules"></nav>
+
+<form th:if="${hasSchedules == true}" method="post" style="max width:300px">
+    <div class="form-group">
+        <ul>
+            <li th:each="schedule : ${schedules}" >
+                <div class="form-group">
+                    <input th:value="${schedule.id}" th:text="${schedule.scheduleDates}" type="radio"  name="scheduleToRemove"/>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div class="form-group">
+        <input type="submit" class="btn btn-danger"/>
+    </div>
+</form>
+
+<form th:if="${hasSchedules == false}" method="post" style="max width:300px">
+    <div class="form-group">
+        <h3>This workplace doesn't seem to have any schedules setup, lets add some!</h3>
+    </div>
+</form>
 
 <footer th:replace="fragments :: navigationFooter"></footer>
 </body>

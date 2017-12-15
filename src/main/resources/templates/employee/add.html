@@ -32,25 +32,34 @@
 
     <div class="form-group">
         <label th:for="employeeCategory">Employee Role</label>
-        <select name="employeeCategoryId">
+        <select name="employeeCategoryName">
             <option th:each="employeeCategory : ${employeeCategories}"
                     th:text="${employeeCategory.name}"
-                    th:value="${employeeCategory.id}"></option>
+                    th:value="${employeeCategory.name}"></option>
         </select>
     </div>
 
     <div class="form-group">
         <label th:for="availability">Availability</label>
-        <input type="checkbox" name="shiftsAvailable" th:each="shift : ${shifts}"
+    </div>
+    <div class="form-group">
+        <ul>
+            <li th:each="shift : ${shifts}">
+                <div class="form-group">
+                     <input type="checkbox" name="shiftsAvailable"
                th:text="|${shift.day} ${shift.startTimeHour}${shift.startTimeMinute} ${shift.startTimeAMPM} - ${shift.endTimeHour}${shift.endTimeMinute} ${shift.endTimeAMPM}|"
                th:value="${shift.id}"/>
-
-
+                </div>
+            </li>
+        </ul>
 
     </div>
-
+    <div class="form-group">
     <input type="submit" class="btn btn-success" value="Add Employee"  />
+    </div>
 </form>
+<div class="form-group">
 <footer th:replace="fragments :: navigationFooter"></footer>
+</div>
 </body>
 </html>

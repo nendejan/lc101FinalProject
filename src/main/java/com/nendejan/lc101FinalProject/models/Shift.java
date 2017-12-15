@@ -31,6 +31,11 @@ public class Shift {
     private int endTimeHour;
     private String endTimeMinute;
 
+
+    @ManyToOne
+    public workplace workplace;
+
+
     @ManyToMany
     private List <Employee> employees = new ArrayList<>();
 
@@ -118,5 +123,14 @@ public class Shift {
         this.endTimeMinute = endTimeMinute;
     }
 
+    public void setEmployees(List<Employee> employees) {
+        this.employees = employees;}
 
+    public com.nendejan.lc101FinalProject.models.workplace getWorkplace() {
+        return workplace;
+    }
+
+    public void setWorkplace(com.nendejan.lc101FinalProject.models.workplace workplace) {
+        this.workplace = workplace;
+    }
 }

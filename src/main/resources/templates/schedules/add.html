@@ -17,11 +17,11 @@
         <label th:for="scheduleDates">Choose Schedule Dates</label>
         <input class="form-control" th:field="*{scheduleDates}"/>
         <span th:errors="*{scheduleDates}" class="error"></span>
-
     </div>
 
-
+    <div class="form-group">
     <input type="submit" class="btn btn-success" value="Create Schedule"  />
+    </div>
 </form>
 
 <footer th:replace="fragments :: navigationFooter"></footer>

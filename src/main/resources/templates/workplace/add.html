@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+<head th:replace="fragments :: head"></head>
+
+<body class="container">
+
+<h1 th:text="${title}">Default Title</h1>
+
+
+<form method="post" style="max-width:600px;" th:object="${workplace}">
+    <div class="form-group">
+        <label th:for="workplaceName">Enter Workplace Name</label>
+        <input class="form-control" th:field="*{workplaceName}" />
+        <span th:errors="*{workplaceName}" class="error"></span>
+
+
+        <input type="submit" class="btn btn-success" value="Setup your Workplace!" />
+    </div>
+</form>
+
+<nav th:replace="fragments :: navigation"></nav>
+
+</body>
+</html>
