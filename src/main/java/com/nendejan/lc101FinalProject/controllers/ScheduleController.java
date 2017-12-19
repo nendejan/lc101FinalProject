@@ -290,18 +290,26 @@ public class ScheduleController {
             Employee thisEmployee = employeeDao.findByNameAndWorkplace(addEmployeeToShift, loggedInUser.getWorkplace());
 
 
-            /* TODO this isnt working
-            if(action == "Add"){
+
+            if(action.equals("Add")){
                 thisEmployee.addShiftToScheduledShifts(thisShift);
                 employeeDao.save(thisEmployee);
                 thisShift.addEmployee(thisEmployee);
-                shiftDao.save(thisShift);}
+                shiftDao.save(thisShift);
 
-            if(action == "Remove"){
+
+
+                return "schedules/addEmployee";}
+
+            if(action.equals("Remove")){
                 thisEmployee.removeShiftFromScheduledShifts(thisShift);
                 employeeDao.save(thisEmployee);
                 thisShift.removeEmployee(thisEmployee);
-                shiftDao.save(thisShift);}*/
+                shiftDao.save(thisShift);
+
+
+
+                return "schedules/addEmployee";}
 
             }
 
