@@ -172,23 +172,23 @@ public class ScheduleController {
 
 
         String scheduleCreationCookieValueString = Integer.toString(schedule.getId());
-        Cookie newScheduleCookie = new Cookie("newScheduleCookie", scheduleCreationCookieValueString);
-        newScheduleCookie.setMaxAge(24 * 60 * 60);
+        Cookie thisScheduleCookie = new Cookie("thisScheduleCookie", scheduleCreationCookieValueString);
+        thisScheduleCookie.setMaxAge(24 * 60 * 60);
 
-        response.addCookie(newScheduleCookie);
+        response.addCookie(thisScheduleCookie);
 
 
         return "redirect:/login/schedules/addEmployee";
     }
 
     @RequestMapping(value = "addEmployee", method = RequestMethod.GET)
-    public String displayAddEmployeeToShiftOnScheduleForm(Model model, HttpServletRequest request, @CookieValue(value="loggedInCookie") String cookieValue, @CookieValue(value="newScheduleCookie") String newScheduleCookieValue, @RequestParam(required = false) Integer shiftId, @RequestParam(required = false) String addEmployeeToShift, @RequestParam(required= false) String action) {
+    public String displayAddEmployeeToShiftOnScheduleForm(Model model, HttpServletRequest request, @CookieValue(value="loggedInCookie") String cookieValue, @CookieValue(value="thisScheduleCookie") String thisScheduleCookieValue, @RequestParam(required = false) Integer shiftId, @RequestParam(required = false) String addEmployeeToShift, @RequestParam(required= false) String action) {
 
         int loggedInUserId = Integer.parseInt(cookieValue);
 
         User loggedInUser = userDao.findOne(loggedInUserId);
 
-        int newScheduleId = Integer.parseInt(newScheduleCookieValue);
+        int newScheduleId = Integer.parseInt(thisScheduleCookieValue);
 
         Schedule newSchedule = scheduleDao.findOne(newScheduleId);
 
@@ -232,13 +232,13 @@ public class ScheduleController {
     }
 
     @RequestMapping(value="addEmployee", method= RequestMethod.POST)
-    public String processAddEmployeeToShiftOnScheduleForm(Model model, HttpServletResponse response, @CookieValue(value="loggedInCookie") String cookieValue, @CookieValue(value="newScheduleCookie") String newScheduleCookieValue, @RequestParam(required = false) Integer shiftId, @RequestParam(required = false) String addEmployeeToShift, @RequestParam(required= false)String action) {
+    public String processAddEmployeeToShiftOnScheduleForm(Model model, HttpServletResponse response, @CookieValue(value="loggedInCookie") String cookieValue, @CookieValue(value="thisScheduleCookie") String thisScheduleCookieValue, @RequestParam(required = false) Integer shiftId, @RequestParam(required = false) String addEmployeeToShift, @RequestParam(required= false)String action, @RequestParam(required = false) Integer newShiftId) {
 
         int loggedInUserId = Integer.parseInt(cookieValue);
 
         User loggedInUser = userDao.findOne(loggedInUserId);
 
-        int newScheduleId = Integer.parseInt(newScheduleCookieValue);
+        int newScheduleId = Integer.parseInt(thisScheduleCookieValue);
 
         Schedule newSchedule = scheduleDao.findOne(newScheduleId);
 
@@ -292,20 +292,47 @@ public class ScheduleController {
 
 
             if(action.equals("Add")){
+
+                if(thisEmployee != null){
+
                 thisEmployee.addShiftToScheduledShifts(thisShift);
                 employeeDao.save(thisEmployee);
                 thisShift.addEmployee(thisEmployee);
-                shiftDao.save(thisShift);
+                shiftDao.save(thisShift);}
+
+                if(thisEmployee == null){
+                    model.addAttribute("employeeNotThere", "You must select an Employee for that action.");
+                    model.addAttribute("thisShift", shiftDao.findByIdAndWorkplace(shiftId, loggedInUser.getWorkplace()));
+                    model.addAttribute("displayMessage", "Choose which employee to add to shift: ");
+                    model.addAttribute("shiftSelected", true);
+                    model.addAttribute("employees", loggedInUser.getWorkplace().getEmployeeRoster());
+                    model.addAttribute("hasSchedules", true);
+                    model.addAttribute("newSchedule", newSchedule);
+                    model.addAttribute("title", "Employee Setup");
+                }
 
 
 
                 return "schedules/addEmployee";}
 
             if(action.equals("Remove")){
+
+                if(thisEmployee != null){
                 thisEmployee.removeShiftFromScheduledShifts(thisShift);
                 employeeDao.save(thisEmployee);
                 thisShift.removeEmployee(thisEmployee);
-                shiftDao.save(thisShift);
+                shiftDao.save(thisShift);}
+
+                if(thisEmployee == null){                    model.addAttribute("employeeNotThere", "You must select an Employee for that action.");
+                    model.addAttribute("thisShift", shiftDao.findByIdAndWorkplace(shiftId, loggedInUser.getWorkplace()));
+                    model.addAttribute("displayMessage", "Choose which employee to add to shift: ");
+                    model.addAttribute("shiftSelected", true);
+                    model.addAttribute("employees", loggedInUser.getWorkplace().getEmployeeRoster());
+                    model.addAttribute("hasSchedules", true);
+                    model.addAttribute("newSchedule", newSchedule);
+                    model.addAttribute("title", "Employee Setup");
+                }
+
 
 
 
@@ -313,13 +340,34 @@ public class ScheduleController {
 
             }
 
+            if(action.equals("Edit")){
+
+                shiftId = newShiftId;
+                model.addAttribute("thisShift", shiftDao.findByIdAndWorkplace(newShiftId, loggedInUser.getWorkplace()));
+                model.addAttribute("displayMessage", "Choose which employee to add to shift: ");
+                model.addAttribute("shiftSelected", true);
+                model.addAttribute("employees", loggedInUser.getWorkplace().getEmployeeRoster());
+                model.addAttribute("hasSchedules", true);
+                model.addAttribute("newSchedule", newSchedule);
+                model.addAttribute("title", "Employee Setup");
 
 
-            String scheduleCookieValueString = Integer.toString(newSchedule.getId());
-            Cookie thisScheduleCookie = new Cookie("thisScheduleCookie", scheduleCookieValueString);
-            thisScheduleCookie.setMaxAge(24 * 60 * 60);
+                return "schedules/addEmployee";
 
-            response.addCookie(thisScheduleCookie);
+        }
+
+            if(action.equals("Finish")){
+                String scheduleCookieValueString = Integer.toString(newSchedule.getId());
+                Cookie thisScheduleCookie = new Cookie("thisScheduleCookie", scheduleCookieValueString);
+                thisScheduleCookie.setMaxAge(24 * 60 * 60);
+
+                response.addCookie(thisScheduleCookie);
+
+                return "schedules/view";
+            }
+
+
+
 
 
 
@@ -341,11 +389,10 @@ public class ScheduleController {
         if(loggedInUser.getWorkplace().getWorkplaceSchedules().isEmpty()== true){
             model.addAttribute("hasSchedules", false);
 
-            model.addAttribute("thisSchedule", null);
+            model.addAttribute("thisSchedule", thisSchedule);
 
 
 
-            /*TODO LOGIC: this is returning the workplace's shift template, not a specific schedules shifts, the template cannot have employees like a schedules shift list can*/
             model.addAttribute("title", "Schedules");
 
             return "schedules/view";
