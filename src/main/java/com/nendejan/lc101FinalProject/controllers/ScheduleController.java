@@ -146,6 +146,8 @@ public class ScheduleController {
 
 
         for(Shift shift : loggedInUser.getWorkplace().getWorkplaceShifts()){
+            if(shift.isPrimaryShift() == true){
+
             Shift shiftClone = new Shift();
 
             shiftClone.setDay(shift.getDay());
@@ -156,11 +158,12 @@ public class ScheduleController {
             shiftClone.setEndTimeMinute(shift.getEndTimeMinute());
             shiftClone.setEndTimeAMPM(shift.getEndTimeAMPM());
             shiftClone.setWorkplace(shift.getWorkplace());
+            shiftClone.setPrimaryShift(false);
 
 
             shiftDao.save(shiftClone);
             schedule.addShift(shiftClone);
-            scheduleDao.save(schedule);
+            scheduleDao.save(schedule);}
         }
 
 
@@ -216,10 +219,22 @@ public class ScheduleController {
         return "schedules/addEmployee";}
 
         if(shiftId != null){
+            Shift theShift = shiftDao.findByIdAndWorkplace(shiftId, loggedInUser.getWorkplace());
+            List<Employee> availableEmployees = new ArrayList<>();
+            for(Employee employee : loggedInUser.getWorkplace().getEmployeeRoster()){
+                for(Shift shift : employee.getAvailability()){
+                    if(shift.shiftCompare(theShift) ==  true){
+                        availableEmployees.add(employee);}
+
+                        }
+                    }
+
+
+
             model.addAttribute("thisShift", shiftDao.findByIdAndWorkplace(shiftId, loggedInUser.getWorkplace()));
             model.addAttribute("displayMessage", "Choose which employee to add to shift: ");
             model.addAttribute("shiftSelected", true);
-            model.addAttribute("employees", loggedInUser.getWorkplace().getEmployeeRoster());
+            model.addAttribute("employees", availableEmployees);
             model.addAttribute("hasSchedules", true);
             model.addAttribute("newSchedule", newSchedule);
             model.addAttribute("title", "Employee Setup");
@@ -265,10 +280,20 @@ public class ScheduleController {
             return "schedules/addEmployee";}
 
         if(shiftId != null && addEmployeeToShift ==null) {
+
+            Shift theShift = shiftDao.findByIdAndWorkplace(shiftId, loggedInUser.getWorkplace());
+            List<Employee> availableEmployees = new ArrayList<>();
+            for(Employee employee : loggedInUser.getWorkplace().getEmployeeRoster()){
+                for(Shift shift : employee.getAvailability()){
+                    if(shift.shiftCompare(theShift) ==  true){
+                        availableEmployees.add(employee);}
+
+                }
+            }
             model.addAttribute("thisShift", shiftDao.findByIdAndWorkplace(shiftId, loggedInUser.getWorkplace()));
             model.addAttribute("displayMessage", "Choose which employee to add to shift: ");
             model.addAttribute("shiftSelected", true);
-            model.addAttribute("employees", loggedInUser.getWorkplace().getEmployeeRoster());
+            model.addAttribute("employees", availableEmployees);
             model.addAttribute("hasSchedules", true);
             model.addAttribute("newSchedule", newSchedule);
             model.addAttribute("title", "Employee Setup");
@@ -278,10 +303,21 @@ public class ScheduleController {
         }
 
         if(shiftId != null && addEmployeeToShift !=null){
+
+            Shift theShift = shiftDao.findByIdAndWorkplace(shiftId, loggedInUser.getWorkplace());
+            List<Employee> availableEmployees = new ArrayList<>();
+            for(Employee employee : loggedInUser.getWorkplace().getEmployeeRoster()){
+                for(Shift shift : employee.getAvailability()){
+                    if(shift.shiftCompare(theShift) ==  true){
+                        availableEmployees.add(employee);}
+
+                }
+            }
+
             model.addAttribute("thisShift", shiftDao.findByIdAndWorkplace(shiftId, loggedInUser.getWorkplace()));
             model.addAttribute("displayMessage", "Choose which employee to add to shift: ");
             model.addAttribute("shiftSelected", true);
-            model.addAttribute("employees", loggedInUser.getWorkplace().getEmployeeRoster());
+            model.addAttribute("employees", availableEmployees);
             model.addAttribute("hasSchedules", true);
             model.addAttribute("newSchedule", newSchedule);
             model.addAttribute("title", "Employee Setup");
@@ -301,11 +337,13 @@ public class ScheduleController {
                 shiftDao.save(thisShift);}
 
                 if(thisEmployee == null){
+
+
                     model.addAttribute("employeeNotThere", "You must select an Employee for that action.");
                     model.addAttribute("thisShift", shiftDao.findByIdAndWorkplace(shiftId, loggedInUser.getWorkplace()));
                     model.addAttribute("displayMessage", "Choose which employee to add to shift: ");
                     model.addAttribute("shiftSelected", true);
-                    model.addAttribute("employees", loggedInUser.getWorkplace().getEmployeeRoster());
+                    model.addAttribute("employees", availableEmployees);
                     model.addAttribute("hasSchedules", true);
                     model.addAttribute("newSchedule", newSchedule);
                     model.addAttribute("title", "Employee Setup");
@@ -327,7 +365,7 @@ public class ScheduleController {
                     model.addAttribute("thisShift", shiftDao.findByIdAndWorkplace(shiftId, loggedInUser.getWorkplace()));
                     model.addAttribute("displayMessage", "Choose which employee to add to shift: ");
                     model.addAttribute("shiftSelected", true);
-                    model.addAttribute("employees", loggedInUser.getWorkplace().getEmployeeRoster());
+                    model.addAttribute("employees", availableEmployees);
                     model.addAttribute("hasSchedules", true);
                     model.addAttribute("newSchedule", newSchedule);
                     model.addAttribute("title", "Employee Setup");
@@ -341,12 +379,21 @@ public class ScheduleController {
             }
 
             if(action.equals("Edit")){
-
                 shiftId = newShiftId;
+
+                Shift theShift = shiftDao.findByIdAndWorkplace(newShiftId, loggedInUser.getWorkplace());
+                List<Employee> availableEmployees = new ArrayList<>();
+                for(Employee employee : loggedInUser.getWorkplace().getEmployeeRoster()){
+                    for(Shift shift : employee.getAvailability()){
+                        if(shift.shiftCompare(theShift)){
+                            availableEmployees.add(employee);}
+
+                    }
+                }
                 model.addAttribute("thisShift", shiftDao.findByIdAndWorkplace(newShiftId, loggedInUser.getWorkplace()));
                 model.addAttribute("displayMessage", "Choose which employee to add to shift: ");
                 model.addAttribute("shiftSelected", true);
-                model.addAttribute("employees", loggedInUser.getWorkplace().getEmployeeRoster());
+                model.addAttribute("employees", availableEmployees);
                 model.addAttribute("hasSchedules", true);
                 model.addAttribute("newSchedule", newSchedule);
                 model.addAttribute("title", "Employee Setup");
