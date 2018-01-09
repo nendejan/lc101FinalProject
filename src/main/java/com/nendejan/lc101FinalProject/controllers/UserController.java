@@ -84,14 +84,14 @@ public class UserController {
 
 
 
-       /*TODO: CSS/UX when you setup css make this font red "error"*/
+
 
        if (usernameTaken == true) {
            model.addAttribute("usernameTakenError", "That user name is currently in use, please choose another.");
            return "login/registration";
        }
 
-       /*TODO VALIDTION: recheck indentation here*/
+
         if (emailTaken == true) {
             model.addAttribute("emailTakenError", "That email already belongs to an account.");
             return "login/registration";
@@ -154,7 +154,7 @@ public class UserController {
 
    @RequestMapping(value="/sign-in", method= RequestMethod.POST)
     public String processSignInPage(HttpServletResponse response,@RequestParam String username, @RequestParam String password, Model model){
-/*TODO Check this logic after setting up dashboard view and handlers*/
+
 
         boolean correctLogin = false;
 
