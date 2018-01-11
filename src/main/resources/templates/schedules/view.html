@@ -2,30 +2,48 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org/">
 <head th:replace="fragments :: head"></head>
 
-<body class="container">
+<body>
 
+<div class="container">
+<div class="row">
+<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 <h1 th:text="${title}">Default Title</h1>
 <nav th:replace="fragments :: navigationSchedules"></nav>
 
 
 <form th:if="${hasSchedules == true}" method="post" style="max width:300px;">
-    <div class="form-group">
-        <table class="table">
+    <div  class="form-group">
+        <h3 th:text="'Schedule Dates: ' +  ${thisSchedule.scheduleDates}"></h3>
+        <div class="container">
 
-            <tr>
-                <th th:text="'Schedule Dates: ' +  ${thisSchedule.scheduleDates}"></th>
-            </tr>
+        <table  class="table table-hover table-responsive" style="table-layout:fixed;" th:each="shift : ${thisSchedule.shiftsOfWeek}" th:value="${shift.id}" name="shiftId" >
+            <thead>
+            <div class="row">
+                <tr >
 
-            <tr th:each="shift : ${thisSchedule.shiftsOfWeek}" th:value="${shift.id}" name="shiftId">
-                <td th:text="${shift.day} + ' ' + ${shift.startTimeAMPM}"></td>
-                <td th:if="${shift.employees.isEmpty() == false}" th:text="${shift.employees.name}"></td>
-            </tr>
+                    <th colspan="6" class="col-6" th:text="${shift.day} + ' ' + ${shift.startTimeHour} + ${shift.StartTimeMinute} + ${shift.startTimeAMPM} + ' ' + '-' + ' ' + ${shift.endTimeHour} + ${shift.endTimeMinute} + ${shift.endTimeAMPM}"></th>
+                    <th colspan="3" class="col-3" >Employee</th>
+                    <th colspan="3" class="col-3">Role</th>
+                </tr>
+            </div>
+            </thead>
+            <tbody>
+                <tr th:if="${shift.employees.isEmpty() == false}" th:each="employee : ${shift.employees}">
+                    <td colspan="6"></td>
+                    <td colspan="3" th:text="${employee.name}"></td>
+                    <td colspan="3" th:text="${employee.employeeCategory.name}"></td>
+                </tr>
+            </tbody>
+
             <div class="form-group">
             </div>
 
         </table>
+            </div>
+        </div>
 
-    </div>
+
+
 </form>
 
 <form th:if="${hasSchedules== false}" method="post" style="max width:300px;">
@@ -36,6 +54,10 @@
 
 
 
+
 <footer th:replace="fragments :: navigationFooter"></footer>
+</div>
+</div>
+</div>
 </body>
 </html>
