@@ -31,13 +31,21 @@ public class Shift {
     private int endTimeHour;
     private String endTimeMinute;
 
+    private boolean isPrimaryShift;
 
     @ManyToOne
     public workplace workplace;
 
 
     @ManyToMany
+    @JoinColumn(name="shift_id")
     private List <Employee> employees = new ArrayList<>();
+
+    public void addEmployee(Employee employee){
+        employees.add(employee);}
+
+    public void removeEmployee(Employee employee){
+        employees.remove(employee);}
 
     public Shift() {
     }
@@ -54,8 +62,19 @@ public class Shift {
 
     }
 
-    public void addEmployee(Employee employee){
-        employees.add(employee);}
+    public boolean shiftCompare(Shift otherShift){
+        if(this.getDay().equals(otherShift.getDay()) &&
+                this.getStartTimeHour() == otherShift.getStartTimeHour() &&
+                this.getStartTimeMinute().equals(otherShift.getStartTimeMinute()) &&
+                this.getStartTimeAMPM().equals(otherShift.getStartTimeAMPM()) &&
+                this.getEndTimeHour() == otherShift.getEndTimeHour() &&
+                this.getEndTimeMinute().equals(otherShift.getEndTimeMinute()) &&
+                this.getEndTimeAMPM().equals(otherShift.getEndTimeAMPM())){
+            return true;}
+        else{
+            return false;
+        }
+    }
 
     public List<Employee> getEmployees() {
         return employees;
@@ -132,5 +151,13 @@ public class Shift {
 
     public void setWorkplace(com.nendejan.lc101FinalProject.models.workplace workplace) {
         this.workplace = workplace;
+    }
+
+    public boolean isPrimaryShift() {
+        return isPrimaryShift;
+    }
+
+    public void setPrimaryShift(boolean primaryShift) {
+        isPrimaryShift = primaryShift;
     }
 }

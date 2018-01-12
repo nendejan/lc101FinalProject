@@ -33,6 +33,7 @@ public class Employee {
     public Schedule schedule;
 
     @ManyToMany
+    @JoinColumn(name="employee_id")
     private List<Shift> scheduledShifts = new ArrayList<>();
 
     public void addShiftToScheduledShifts(Shift thisShift){
@@ -43,6 +44,7 @@ public class Employee {
 
 
     @ManyToMany
+    @JoinColumn(name="employee_id")
     private List<Shift> availability = new ArrayList<>();
 
     public void addShiftAvailability(Shift thisShift){

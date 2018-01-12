@@ -73,17 +73,24 @@ public class workplace {
     public void removeSchedule(Schedule thisSchedule){
         this.workplaceSchedules.remove(thisSchedule);}
 
+    public List<Shift> getWorkplacePrimaryShifts (workplace thisWorkplace){
+        List<Shift> workplacesPrimaryShifts= new ArrayList<>();
+
+        for(Shift shift : thisWorkplace.getWorkplaceShifts()){
+            if(shift.isPrimaryShift()==true){
+                workplacesPrimaryShifts.add(shift);
+
+            }
+
+        }
+        return workplacesPrimaryShifts;
+    }
 
 
 
     /*
 
 TODO Implement later
-
-
-    private List<Schedule> workplaceSchedules = new ArrayList<>();
-
-
     private List<User> workplaceAdmin = new ArrayList<>();
     */
 

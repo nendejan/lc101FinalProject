@@ -4,12 +4,97 @@
     <meta charset="UTF-8"/>
     <title th:text="${title}">Default Title</title>
 
-
+    <head>
+        <link rel="stylesheet" type="text/css" href="main.css"/>
+    </head>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
     <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
 </head>
 <body>
+
+
+
+<nav th:fragment="topBoiler">
+
+
+            <div class="container">
+                <div class="page-header" style="height:100px;">
+                    <object   data="/images/logo.svg" type="image/svg+xml" height="50" width="50" style="display: inline-block;">Fail</object>
+                    <h1  style="display:inline-block; margin-left: 20px;" th:text="${title}">Default Title</h1>
+                    <div class="container">
+                        <div class="dropdown">
+                            <button class="btn btn-primary dropdown-toggle btn-lg" type="button" data-toggle="dropdown">Employees
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a href="/login/employee" class="btn btn-info">Employee List</a></li>
+                                <li><a href="/login/employee/add" class="btn btn-info">Add New Employee</a></li>
+                                <li><a href="/login/employee/remove" class="btn btn-info">Remove Employee</a></li>
+                            </ul>
+
+
+                        </div>
+
+                    </div>
+
+                    <div class="container">
+                        <div class="dropdown">
+                            <button class="btn btn-primary dropdown-toggle btn-lg" type="button" data-toggle="dropdown">Employee Categories
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a href="/login/employeeCategory" class="btn btn-info">Employee Category List</a></li>
+                                <li><a href="/login/employeeCategory/add" class="btn btn-info">Add New Employee Category</a></li>
+                                <li><a href="/login/employee/remove" class="btn btn-info">Remove Employee</a></li>
+                            </ul>
+
+
+                        </div>
+
+                    </div>
+
+                    <div class="container">
+                        <div class="dropdown">
+                            <button class="btn btn-primary dropdown-toggle btn-lg" type="button" data-toggle="dropdown">Shifts
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a href="/login/shifts" class="btn btn-info">Shifts List</a></li>
+                                <li><a href="/login/shifts/add" class="btn btn-info">Add New Shift</a></li>
+                                <li><a href="/login/shifts/remove" class="btn btn-info">Remove Shift</a></li>
+                            </ul>
+
+
+                        </div>
+
+                    </div>
+
+                    <div class="container">
+                        <div class="dropdown">
+                            <button class="btn btn-primary dropdown-toggle btn-lg" type="button" data-toggle="dropdown">Schedules
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a href="/login/schedules" class="btn btn-info">Schedules List</a></li>
+                                <li><a href="/login/schedules/add" class="btn btn-info">Add New Schedule</a></li>
+                                <li><a href="/login/schedules/remove" class="btn btn-info">Remove Schedule</a></li>
+                            </ul>
+
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+
+
+
+
+
+
+</nav>
 
 
 <nav th:fragment="navigationLogin">

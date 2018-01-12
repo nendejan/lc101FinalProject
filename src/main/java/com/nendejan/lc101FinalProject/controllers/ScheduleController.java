@@ -270,12 +270,14 @@ public class ScheduleController {
 
         }
         if(shiftId == null && addEmployeeToShift == null){
-            model.addAttribute("displayMessage", "Choose a shift to start adding employees to: ");
+            model.addAttribute("shiftNotSelected", "Choose a shift to start adding employees to: ");
+
             model.addAttribute("shiftSelected", false);
             model.addAttribute("employees", loggedInUser.getWorkplace().getEmployeeRoster());
             model.addAttribute("hasSchedules", true);
             model.addAttribute("newSchedule", newSchedule);
             model.addAttribute("title", "Employee Setup");
+
 
             return "schedules/addEmployee";}
 
@@ -478,7 +480,7 @@ public class ScheduleController {
 
             model.addAttribute("thisSchedule", null);
 
-            /*TODO LOGIC: this is returning the workplace's shift template, not a specific schedules shifts, the template cannot have employees like a schedules shift list can*/
+
             model.addAttribute("title", "Schedules");
 
             return "schedules/view";

@@ -47,7 +47,7 @@
             <li th:each="shift : ${shifts}">
                 <div class="form-group">
                      <input type="checkbox" name="shiftsAvailable"
-               th:text="|${shift.day} ${shift.startTimeHour}${shift.startTimeMinute} ${shift.startTimeAMPM} - ${shift.endTimeHour}${shift.endTimeMinute} ${shift.endTimeAMPM}|"
+               th:text="| ${shift.day} ${shift.startTimeHour}${shift.startTimeMinute} ${shift.startTimeAMPM} - ${shift.endTimeHour}${shift.endTimeMinute} ${shift.endTimeAMPM}|"
                th:value="${shift.id}"/>
                 </div>
             </li>

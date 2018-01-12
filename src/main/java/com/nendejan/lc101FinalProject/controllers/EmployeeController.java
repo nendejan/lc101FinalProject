@@ -1,8 +1,5 @@
 package com.nendejan.lc101FinalProject.controllers;
-import com.nendejan.lc101FinalProject.models.Employee;
-import com.nendejan.lc101FinalProject.models.EmployeeCategory;
-import com.nendejan.lc101FinalProject.models.Shift;
-import com.nendejan.lc101FinalProject.models.User;
+import com.nendejan.lc101FinalProject.models.*;
 import com.nendejan.lc101FinalProject.models.data.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,7 +79,7 @@ public class EmployeeController {
         model.addAttribute(new Employee());
         model.addAttribute("employeeRoleSelection", "Choose Employee Role");
         model.addAttribute("employeeCategories", loggedInUser.getWorkplace().getEmployeeRoles());
-        model.addAttribute("shifts", loggedInUser.getWorkplace().getWorkplaceShifts());
+        model.addAttribute("shifts", loggedInUser.getWorkplace().getWorkplacePrimaryShifts(loggedInUser.getWorkplace()));
 
         return "employee/add";
     }
@@ -101,18 +98,36 @@ public class EmployeeController {
 
         EmployeeCategory cat = employeeCategoryDao.findByNameAndWorkplace(employeeCategoryName, loggedInUser.getWorkplace());
         List<Shift> shiftsToAdd =new ArrayList<>();
-        loggedInUser.getWorkplace().addEmployee(newEmployee);
+
+
         for (Integer shiftId : shiftsAvailable){
-            shiftsToAdd.add(shiftDao.findOne(shiftId));
+            Shift shiftToClone = shiftDao.findOne(shiftId);
+            Shift shiftClone = new Shift();
+
+            shiftClone.setDay(shiftToClone.getDay());
+            shiftClone.setStartTimeHour(shiftToClone.getStartTimeHour());
+            shiftClone.setStartTimeMinute(shiftToClone.getStartTimeMinute());
+            shiftClone.setStartTimeAMPM(shiftToClone.getStartTimeAMPM());
+            shiftClone.setEndTimeHour(shiftToClone.getEndTimeHour());
+            shiftClone.setEndTimeMinute(shiftToClone.getEndTimeMinute());
+            shiftClone.setEndTimeAMPM(shiftToClone.getEndTimeAMPM());
+            shiftClone.setWorkplace(shiftToClone.getWorkplace());
+            shiftClone.setPrimaryShift(false);
+            shiftDao.save(shiftClone);
+
+
+            shiftsToAdd.add(shiftClone);
 
 
         }
 
+
+        loggedInUser.getWorkplace().addEmployee(newEmployee);
         newEmployee.setAvailability(shiftsToAdd);
         newEmployee.setEmployeeCategory(cat);
 
         employeeDao.save(newEmployee);
-        List<Shift> shiftCheck = newEmployee.getAvailability();
+
         return "redirect:";
 
     }
@@ -148,6 +163,18 @@ public class EmployeeController {
         Employee removeMe = employeeDao.findByNameAndWorkplace(employeeToRemove, loggedInUser.getWorkplace());
 
         loggedInUser.getWorkplace().removeEmployee(removeMe);
+        for(Shift shift : loggedInUser.getWorkplace().getWorkplaceShifts()){
+            shift.removeEmployee(removeMe);
+        }
+
+        for(Schedule schedule : loggedInUser.getWorkplace().getWorkplaceSchedules()){
+            for(Shift shift : schedule.getShiftsOfWeek()){
+                shift.removeEmployee(removeMe);
+            }
+        }
+        removeMe.getAvailability().clear();
+        removeMe.getScheduledShifts().clear();
+
         employeeDao.delete(removeMe);
         workplaceDao.save(loggedInUser.getWorkplace());
 

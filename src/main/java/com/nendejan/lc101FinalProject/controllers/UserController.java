@@ -37,7 +37,7 @@ public class UserController {
 
     @RequestMapping(value="")
     public String index(Model model){
-        model.addAttribute("title", "Welcome to the Scheduling App!");
+        model.addAttribute("title", "Welcome to Toby!");
 
         return "login/index";
 

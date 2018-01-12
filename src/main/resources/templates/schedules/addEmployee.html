@@ -12,20 +12,23 @@
 <form th:if="${hasSchedules == true and shiftSelected == false}" method="post" style="max width:300px;">
     <div class="form-group">
     <h3 th:text="${displayMessage}"></h3>
+    <h3 th:text="${shiftNotSelected}" style="color:red"></h3>
     </div>
 
 
     <div class="form-group">
-        <ul>
+
+        <ul style="list-style: none;">
             <li th:each="shift : ${newSchedule.shiftsOfWeek}" >
                 <div class="form-group">
-                    <input th:value="${shift.id}" th:text="${' ' + shift.day} + ' ' + ${shift.startTimeAMPM}" type="checkbox"  name="shiftId"/>
+                    <input th:value="${shift.id}" th:text="${' ' + shift.day} + ' ' + ${shift.startTimeAMPM}" type="radio"  name="shiftId"/>
                 </div>
             </li>
         </ul>
     </div>
     <div class="form-group">
-        <input type="submit" class="btn btn-success"/>
+        <input value="Edit Shift" type="submit" class="btn btn-success"/>
+
     </div>
 
 
@@ -35,31 +38,68 @@
     <div class="form-group">
         <h3 th:text="${displayMessage}"></h3>
         <h4 th:text="${addedEmployeeMessage}"></h4>
+        <h4 th:text="${employeeNotThere}" style="color:red"></h4>
     </div>
 
     <div class="form-group">
-        <table class="table">
 
-            <tr>
-                <th th:text="'Schedule Dates: ' +  ${newSchedule.scheduleDates}"></th>
-            </tr>
+        <h3 th:text="'Schedule Dates: ' +  ${newSchedule.scheduleDates}"></h3>
+        <table class="table table-hover table-responsive">
 
-            <tr>
-                <td th:text="${thisShift.day} + ' ' + ${thisShift.startTimeAMPM} + ' '"></td>
-                <td th:if="${thisShift.employees.isEmpty() == false}" th:text="${thisShift.employees.name}"></td>
-                <td><select name="addEmployeeToShift">
-                    <option selected="true">Select Employee</option>
-                    <option th:each="employee : ${employees}" th:text="${employee.name}" th:value="${employee.name}"></option></select></td>
+            <thead>
+                <tr>
+                    <th th:text="${thisShift.day} + ' ' + ${thisShift.startTimeHour} + ${thisShift.StartTimeMinute} + ${thisShift.startTimeAMPM} + ' ' + '-' + ' ' + ${thisShift.endTimeHour} + ${thisShift.endTimeMinute} + ${thisShift.endTimeAMPM}"></th>
+                    <th>Employee</th>
+                    <th>Role</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr th:each="employee : ${thisShift.employees}">
+                    <td></td>
+                    <td th:text="${employee.name}"></td>
+                    <td th:text="${employee.employeeCategory.name}"></td>
 
 
-                <td><input value="Add" type="submit" class="btn btn-success"/></td>
-            </tr>
-            <div class="form-group">
-            </div>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td><select name="addEmployeeToShift">
+                        <option selected="true">Select Employee</option>
+                        <option th:each="employee : ${employees}"
+                                th:text="${employee.name} + ' ' + '-' + ' ' + ${employee.employeeCategory.name}"
+                                th:value="${employee.name}">
+
+                        </option>
+                    </select></td>
+
+
+                    <td><input value="Add" type="submit" class="btn btn-success" th:value="Add" name="action" /></td>
+                    <td><input value="Remove" type="submit" class="btn btn-danger" th:value="Remove" name="action" /></td>
+
+
+                </tr>
+            </tbody>
 
         </table>
-
     </div>
+        <div class="form-group">
+            <input type="hidden" th:value="${thisShift.id}" name="shiftId"/>
+            <p>Select New Shift to Add Employees too: </p>
+            <select name="newShiftId">
+                <option th:each="shift : ${newSchedule.shiftsOfWeek}"
+                        th:text="${shift.day} + ' ' + ${shift.startTimeAMPM + ' '}"
+                        th:value="${shift.id}">
+                </option>
+            </select>
+            <input value="Edit" type="submit" class="btn btn-warning" th:value="Edit" name="action"/>
+        </div>
+        <div class="form-group">
+            <input value="Finish" type="submit" class="btn btn-success" th:value="Finish" name="action"/>
+        </div>
+
+
+
 </form>
 
 <form th:if="${hasSchedules == false}" method="post" style="max width:300px;">

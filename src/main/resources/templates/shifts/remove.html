@@ -7,6 +7,8 @@
 <h1 th:text="${title}">Default Title</h1>
 <nav th:replace="fragments :: navigationShifts"></nav>
 
+<h4 th:text="${noShiftSelected}" style="color:red"></h4>
+
 <form th:if="${hasShifts == true}" method="post" style="max width:300px">
     <div class="form-group">
         <ul>

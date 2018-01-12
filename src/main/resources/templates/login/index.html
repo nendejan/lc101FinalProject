@@ -1,11 +1,38 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org/">
-<head th:replace="fragments :: head"></head>
+    <head th:replace="fragments :: head"></head>
 
-<body class="container">
+    <body class="container">
 
-<h1 th:text="${title}">Default Title</h1>
-<nav th:replace="fragments :: navigationLogin"></nav>
 
-</body>
+        <div class="container">
+            <div class="row">
+                <div class="page-header" style="height:100px;">
+
+                </div>
+
+
+
+                <div class="jumbotron">
+                    <div class="container">
+                    <object   data="images/logo.svg" type="image/svg+xml" height="100" width="100" style="display: inline-block; margin-left:-10px">Fail</object>
+                    <h1  th:text="${title}" style="display:inline-block; margin-left:10px; ">Default Title</h1>
+                        <p class="lead">An application designed to aid small businesses in the creation and management of employee scheduling.</p>
+                        <hr/>
+                        <div class="form-group col-lg-6 col-md-6 col-sm-12" >
+                            <a href="/login/registration" class="btn btn-lg btn-primary" role="button">Sign Up!</a>
+                            <a href="/login/sign-in" class="btn btn-lg btn-success" role="button">Sign In!</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+
+
+
+        </div>
+    </body>
 </html>
